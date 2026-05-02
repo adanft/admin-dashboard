@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Admin Dashboard
 
-## Getting Started
+Modern admin dashboard built with Next.js, React, TypeScript, Tailwind CSS, and Biome.
 
-First, run the development server:
+## Stack
+
+- [Next.js](https://nextjs.org/) 16
+- [React](https://react.dev/) 19
+- [TypeScript](https://www.typescriptlang.org/) 5
+- [Tailwind CSS](https://tailwindcss.com/) 4
+- [Biome](https://biomejs.dev/) for formatting, linting, and import organization
+- [pnpm](https://pnpm.io/) as the package manager
+
+## Requirements
+
+- Node.js 22 or newer
+- pnpm 10.33.0
+
+This project pins the package manager through `packageManager` in `package.json`.
+
+## Getting started
+
+Install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Run the development server:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Command | Description |
+| --- | --- |
+| `pnpm dev` | Start the Next.js development server. |
+| `pnpm build` | Build the production application. |
+| `pnpm start` | Start the production server after building. |
+| `pnpm lint` | Run Biome checks locally. |
+| `pnpm lint:fix` | Run Biome and write safe fixes, formatting, and import organization. |
+| `pnpm lint:ci` | Run Biome in CI mode without writing files. |
+| `pnpm format` | Format files with Biome. |
+| `pnpm format:check` | Check formatting without writing files. |
+| `pnpm typecheck` | Run TypeScript without emitting files. |
+| `pnpm check` | Run Biome CI checks and TypeScript checks. |
+| `pnpm ci` | Run all CI validation locally, including the production build. |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Code quality
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The project uses Biome as the main quality gate:
 
-## Deploy on Vercel
+- formatting with 2 spaces and 100-character line width
+- single quotes in JavaScript/TypeScript
+- double quotes in JSX/TSX attributes
+- recommended Biome rules
+- React and Next.js recommended domains
+- unused imports and variables as errors
+- import organization through Biome assist
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+TypeScript is checked separately with `tsc --noEmit`. Biome and TypeScript solve different problems: Biome handles style and linting; TypeScript validates type contracts.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Continuous Integration
+
+GitHub Actions runs on pushes and pull requests targeting `main`:
+
+1. install dependencies with pnpm and the frozen lockfile
+2. run Biome in CI mode
+3. run TypeScript checks
+4. build the application
+
+## License
+
+This project is licensed under the [MIT License](./LICENSE).
