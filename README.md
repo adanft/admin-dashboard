@@ -1,6 +1,6 @@
 # Admin Dashboard
 
-Modern admin dashboard built with Next.js, React, TypeScript, Tailwind CSS, and Biome.
+Modern admin dashboard built with Next.js, React, TypeScript, Tailwind CSS, `@adanft/ui`, and Biome.
 
 ## Stack
 
@@ -8,6 +8,7 @@ Modern admin dashboard built with Next.js, React, TypeScript, Tailwind CSS, and 
 - [React](https://react.dev/) 19
 - [TypeScript](https://www.typescriptlang.org/) 5
 - [Tailwind CSS](https://tailwindcss.com/) 4
+- [`@adanft/ui`](https://www.npmjs.com/package/@adanft/ui) as the shared React UI component and design-system contract
 - [Biome](https://biomejs.dev/) for formatting, linting, and import organization
 - [pnpm](https://pnpm.io/) as the package manager
 
@@ -63,6 +64,17 @@ The project uses Biome as the main quality gate:
 - import organization through Biome assist
 
 TypeScript is checked separately with `tsc --noEmit`. Biome and TypeScript solve different problems: Biome handles style and linting; TypeScript validates type contracts.
+
+## UI and styling conventions
+
+This project uses `@adanft/ui` as the source of truth for reusable UI components and visual language.
+
+- Prefer existing `@adanft/ui` components before creating local reusable components.
+- Do not introduce custom colors, backgrounds, text colors, or component variants that duplicate the design system.
+- Use Tailwind CSS as a utility layer, not as a replacement for the design-system contract.
+- Avoid unnecessary Tailwind classes that do not add layout, behavior, accessibility, or clear design value.
+- Do not add animations or transitions unless explicitly requested.
+- Keep accessibility practical and essential: semantic HTML first, labels for forms, `alt` text for meaningful images, button types, and keyboard support where interaction requires it.
 
 ## Continuous Integration
 
