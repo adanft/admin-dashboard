@@ -49,7 +49,7 @@ describe('DashboardSidebar', () => {
 
     const markup = renderToStaticMarkup(<DashboardSidebar />);
 
-    expect(markup).toContain('aria-current="page" href="/account"');
+    expect(markup).toMatch(/<a[^>]*aria-current="page"[^>]*href="\/account"/);
     expect(markup).not.toContain('href="/account/sessions" aria-current="page"');
     expect(markup.match(/aria-current="page"/g)).toHaveLength(1);
   });

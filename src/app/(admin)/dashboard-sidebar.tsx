@@ -1,6 +1,7 @@
 'use client';
 
 import { Sidebar, SidebarBody, SidebarHead, SidebarLink, SidebarSection } from '@adanft/ui';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
@@ -26,11 +27,13 @@ export default function DashboardSidebar() {
               {activeItems.map((item) => (
                 <SidebarLink
                   active={item.active}
-                  href={item.href}
+                  asChild
                   icon={item.icon}
                   key={item.href}
                   text={item.label}
-                />
+                >
+                  <Link href={item.href}>{item.label}</Link>
+                </SidebarLink>
               ))}
             </section>
           );
