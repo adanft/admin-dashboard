@@ -14,7 +14,7 @@ export async function signUpAction(
   const payload = readRegisterPayload(formData);
 
   if (!payload) {
-    return { error: 'Complete all required fields to create the initial admin.' };
+    return { error: 'Please complete all required fields to create the initial admin account.' };
   }
 
   const result = await register(payload);

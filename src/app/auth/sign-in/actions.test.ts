@@ -62,7 +62,7 @@ describe('sign in action', () => {
       mocks.authApi.login.mockRejectedValue(new mocks.MockAdminApiError(status));
 
       await expect(signInAction({}, createSignInFormData())).resolves.toEqual({
-        error: 'Invalid identity or password.',
+        error: 'Invalid username or password.',
       });
       expect(mocks.clearSession).toHaveBeenCalled();
     },

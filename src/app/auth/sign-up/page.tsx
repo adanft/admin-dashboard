@@ -9,7 +9,7 @@ export default function SignUpPage() {
         <section className="flex flex-col gap-6">
           <div className="space-y-2 text-center">
             <h1 className="text-3xl font-bold text-heading">Setup</h1>
-            <p className="text-sm text-muted">Configure the initial account to dashboard.</p>
+            <p className="text-sm text-muted">Configure the initial dashboard account.</p>
           </div>
           <SignUpForm />
         </section>

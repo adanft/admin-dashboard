@@ -18,7 +18,9 @@ export default function SignInPage() {
               className="mx-auto"
             />
             <h1 className="text-3xl font-bold text-heading">Sign In</h1>
-            <p className="text-sm text-muted">Enter your credentials to access the dashboard.</p>
+            <p className="text-sm text-muted">
+              Enter your username and password to access the dashboard.
+            </p>
           </div>
           <SignInForm />
         </section>

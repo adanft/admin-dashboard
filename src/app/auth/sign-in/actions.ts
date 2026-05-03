@@ -6,7 +6,7 @@ import { authApi, isAdminApiError } from '@/lib/api/client';
 import { clearSession, setSessionFromAuthData } from '@/lib/auth/session';
 import type { AuthActionState, LoginPayload } from '@/lib/auth/types';
 
-const INVALID_SIGN_IN_MESSAGE = 'Invalid identity or password.';
+const INVALID_SIGN_IN_MESSAGE = 'Invalid username or password.';
 
 export async function signInAction(
   _previousState: AuthActionState,
@@ -33,7 +33,7 @@ async function login(payload: LoginPayload) {
 
     if (data.requiredAction === 'change_password') {
       await clearSession();
-      return { success: false, error: 'Password change is required before signing in.' } as const;
+      return { success: false, error: 'Please change your password before signing in.' } as const;
     }
 
     const sessionWasSet = await setSessionFromAuthData(data);
@@ -42,7 +42,7 @@ async function login(payload: LoginPayload) {
       await clearSession();
       return {
         success: false,
-        error: 'Sign-in succeeded but no usable session was returned.',
+        error: 'We couldn’t sign you in. Please try again.',
       } as const;
     }
 
@@ -54,7 +54,10 @@ async function login(payload: LoginPayload) {
       return { success: false, error: INVALID_SIGN_IN_MESSAGE } as const;
     }
 
-    return { success: false, error: 'Sign-in is unavailable. Please try again.' } as const;
+    return {
+      success: false,
+      error: 'Sign in is temporarily unavailable. Please try again.',
+    } as const;
   }
 }
 

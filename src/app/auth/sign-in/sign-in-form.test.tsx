@@ -18,13 +18,13 @@ vi.mock('./actions', () => ({
 describe('SignInForm', () => {
   it('associates rendered errors with the form and marks fields invalid', () => {
     const markup = renderToStaticMarkup(
-      <SignInForm initialActionState={{ error: 'Invalid identity or password.' }} />,
+      <SignInForm initialActionState={{ error: 'Invalid username or password.' }} />,
     );
 
     expect(markup).toContain('aria-describedby="sign-in-error"');
     expect(markup).toContain('id="sign-in-error"');
     expect(markup).toContain('role="alert"');
-    expect(markup).toContain('Invalid identity or password.');
+    expect(markup).toContain('Invalid username or password.');
     expect(markup).toContain('aria-invalid="true"');
   });
 });

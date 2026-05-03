@@ -13,6 +13,6 @@ describe('sign-up failures', () => {
   it('keeps validation failures distinct from setup-closed failures', () => {
     const error = new AdminApiError({ message: 'bad payload', status: 400 });
 
-    expect(getSignUpErrorMessage(error)).toBe('Review the registration details and try again.');
+    expect(getSignUpErrorMessage(error)).toBe('Please review your account details and try again.');
   });
 });
