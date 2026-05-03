@@ -45,11 +45,7 @@ export default function SignInForm({ initialActionState = initialState }: SignIn
         />
       </Field>
 
-      {state.error ? (
-        <p id="sign-in-error" role="alert" className="text-sm text-danger">
-          {state.error}
-        </p>
-      ) : null}
+      <Field.Error id="sign-in-error">{state.error}</Field.Error>
 
       <Button type="submit" disabled={isPending} className="w-full">
         {isPending ? 'Signing in…' : 'Sign in'}

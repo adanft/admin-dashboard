@@ -54,11 +54,7 @@ export default function SignUpForm({ initialActionState = initialState }: SignUp
         <Field.Description>Optional.</Field.Description>
       </Field>
 
-      {state.error ? (
-        <p id="sign-up-error" role="alert" className="text-sm text-danger">
-          {state.error}
-        </p>
-      ) : null}
+      <Field.Error id="sign-up-error">{state.error}</Field.Error>
 
       <Button type="submit" disabled={isPending} className="w-full">
         {isPending ? 'Setting up…' : 'Setup'}
