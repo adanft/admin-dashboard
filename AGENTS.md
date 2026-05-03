@@ -86,6 +86,9 @@ Before writing or changing Next.js-specific code, read the relevant guide in `no
 - Avoid decorative Tailwind classes that add no functional, layout, accessibility, or design-system value.
 - Avoid redundant classes already provided by `@adanft/ui` components.
 - Keep spacing, typography, backgrounds, borders, and text colors aligned with existing `@adanft/ui` defaults.
+- Prefer named Tailwind spacing utilities for layout offsets, including project-defined fractional
+  spacing such as `pl-16.25`, instead of arbitrary values like `pl-[65px]` when the value is part
+  of the design/layout convention.
 - Do not create local color scales or arbitrary color values unless explicitly approved.
 - Do not enable experimental Tailwind class sorting rules unless explicitly requested.
 - Do not add local Tailwind-specific agent skills for this project unless explicitly requested; project styling rules belong in this file for now.
