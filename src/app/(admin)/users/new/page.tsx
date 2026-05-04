@@ -1,7 +1,7 @@
 import Box from '@adanft/ui/box';
 
-import { hasCreateUserSession, UserRouteMessage } from '../route-state';
-import UserProfileForm from '../user-profile-form';
+import UserProfileForm from '../_components/user-profile-form';
+import { hasCreateUserSession, UserRouteMessage } from '../_lib/route-state';
 
 export default async function NewUserPage() {
   const hasSession = await hasCreateUserSession();

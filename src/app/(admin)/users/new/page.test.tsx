@@ -17,7 +17,7 @@ vi.mock('@/lib/auth/session', () => ({
   getSession: vi.fn(),
 }));
 
-vi.mock('../actions', () => ({
+vi.mock('../_lib/user-actions', () => ({
   createUserAction: vi.fn(),
   updateUserAction: vi.fn(),
 }));

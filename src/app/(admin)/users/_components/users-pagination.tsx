@@ -18,15 +18,6 @@ type PaginationChange = {
   pageSize: number;
 };
 
-export function UsersPagination({ pagination, total }: UsersPaginationProps) {
-  return (
-    <div className="space-y-3">
-      <UsersPaginationHead pagination={pagination} total={total} />
-      <UsersPaginationFoot pagination={pagination} total={total} />
-    </div>
-  );
-}
-
 export function UsersPaginationHead({ pagination, total }: UsersPaginationProps) {
   const { navigateToPage, pageSize, totalItems } = useUsersPagination({ pagination, total });
 

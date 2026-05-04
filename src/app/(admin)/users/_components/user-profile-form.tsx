@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useActionState } from 'react';
 
 import type { UserProfile } from '@/lib/api/users';
-import { createUserAction, type UserActionState, updateUserAction } from './actions';
+import { createUserAction, type UserActionState, updateUserAction } from '../_lib/user-actions';
 
 type UserProfileFormProps =
   | {

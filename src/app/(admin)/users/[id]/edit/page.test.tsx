@@ -32,7 +32,7 @@ vi.mock('@/lib/api/users', async () => {
   };
 });
 
-vi.mock('../../actions', () => ({
+vi.mock('../../_lib/user-actions', () => ({
   createUserAction: vi.fn(),
   updateUserAction: vi.fn(),
 }));

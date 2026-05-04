@@ -5,8 +5,8 @@ import { Pencil } from 'lucide-react';
 import Link from 'next/link';
 
 import type { UserProfile, UserStatus } from '@/lib/api/users';
-import { loadUserRouteState, UserRouteMessage } from '../route-state';
-import UserRowDeleteAction from '../user-row-delete-action';
+import UserRowDeleteAction from '../_components/user-row-delete-action';
+import { loadUserRouteState, UserRouteMessage } from '../_lib/route-state';
 
 type UserDetailPageProps = {
   params: Promise<{ id: string }>;

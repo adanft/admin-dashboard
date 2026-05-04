@@ -5,7 +5,7 @@ import Modal from '@adanft/ui/modal';
 import { Trash } from 'lucide-react';
 import { startTransition, useActionState, useState } from 'react';
 
-import { deleteUserAction, type UserActionState } from './actions';
+import { deleteUserAction, type UserActionState } from '../_lib/user-actions';
 
 type UserRowDeleteActionProps = {
   presentation?: 'icon' | 'text';
@@ -74,9 +74,11 @@ export function DeleteUserConfirmationContent({
     <div aria-describedby={errorId} className="space-y-4">
       <div className="space-y-2">
         <h2 className="text-xl font-semibold text-heading" id={`delete-user-title-${userId}`}>
-          Delete {userLabel}?
+          Delete User
         </h2>
-        <p className="text-foreground">This action permanently removes this user profile.</p>
+        <p className="text-foreground">
+          Are you sure you want to delete &quot;{userLabel}&quot;? This action cannot be undone.
+        </p>
       </div>
 
       {state.message ? (

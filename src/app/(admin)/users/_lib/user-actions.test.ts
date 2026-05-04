@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createUserAction, deleteUserAction, updateUserAction } from './actions';
+import { createUserAction, deleteUserAction, updateUserAction } from './user-actions';
 
 const mocks = vi.hoisted(() => {
   class MockAdminApiError extends Error {

@@ -1,7 +1,7 @@
 import Box from '@adanft/ui/box';
 
-import { loadUserRouteState, UserRouteMessage } from '../../route-state';
-import UserProfileForm from '../../user-profile-form';
+import UserProfileForm from '../../_components/user-profile-form';
+import { loadUserRouteState, UserRouteMessage } from '../../_lib/route-state';
 
 type EditUserPageProps = {
   params: Promise<{ id: string }>;

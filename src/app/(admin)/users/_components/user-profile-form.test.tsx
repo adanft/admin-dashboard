@@ -12,7 +12,7 @@ vi.mock('react', async (importOriginal) => {
   };
 });
 
-vi.mock('./actions', () => ({
+vi.mock('../_lib/user-actions', () => ({
   createUserAction: vi.fn(),
   updateUserAction: vi.fn(),
 }));

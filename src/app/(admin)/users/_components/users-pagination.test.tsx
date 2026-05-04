@@ -4,7 +4,6 @@ import { describe, expect, it, vi } from 'vitest';
 
 import {
   buildUsersPaginationHref,
-  UsersPagination,
   UsersPaginationFoot,
   UsersPaginationHead,
 } from './users-pagination';
@@ -17,15 +16,18 @@ vi.mock('next/navigation', () => ({
 
 describe('UsersPagination', () => {
   it('renders design-system pagination labels from backend pagination totals', () => {
-    const markup = renderToStaticMarkup(
-      <UsersPagination pagination={{ total: 42, limit: 25, offset: 25 }} total={42} />,
+    const headMarkup = renderToStaticMarkup(
+      <UsersPaginationHead pagination={{ total: 42, limit: 25, offset: 25 }} total={42} />,
+    );
+    const footMarkup = renderToStaticMarkup(
+      <UsersPaginationFoot pagination={{ total: 42, limit: 25, offset: 25 }} total={42} />,
     );
 
-    expect(markup).toContain('users per page:');
-    expect(markup).toContain('Total 42 users');
-    expect(markup).toContain('Showing 26–42 of 42 users');
-    expect(markup).toContain('aria-label="Previous page"');
-    expect(markup).toContain('aria-label="Next page"');
+    expect(headMarkup).toContain('users per page:');
+    expect(headMarkup).toContain('Total 42 users');
+    expect(footMarkup).toContain('Showing 26–42 of 42 users');
+    expect(footMarkup).toContain('aria-label="Previous page"');
+    expect(footMarkup).toContain('aria-label="Next page"');
   });
 
   it('allows the pagination head and foot to render as separate client islands', () => {

@@ -13,7 +13,7 @@ vi.mock('react', async (importOriginal) => {
   };
 });
 
-vi.mock('./actions', () => ({
+vi.mock('../_lib/user-actions', () => ({
   deleteUserAction: vi.fn(),
 }));
 
@@ -51,8 +51,10 @@ describe('UserRowDeleteAction', () => {
       />,
     );
 
-    expect(markup).toContain('Delete Ada Lovelace?');
-    expect(markup).toContain('This action permanently removes this user profile.');
+    expect(markup).toContain('Delete User');
+    expect(markup).toContain(
+      'Are you sure you want to delete &quot;Ada Lovelace&quot;? This action cannot be undone.',
+    );
     expect(markup).not.toContain('<form');
     expect(markup).not.toContain('name="id"');
     expect(markup).not.toContain('name="confirm"');
