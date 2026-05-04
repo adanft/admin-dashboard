@@ -33,7 +33,7 @@ async function login(payload: LoginPayload) {
 
     if (data.requiredAction === 'change_password') {
       await clearSession();
-      return { success: false, error: 'Please change your password before signing in.' } as const;
+      return { success: false, error: 'Please change your password before sign in.' } as const;
     }
 
     const sessionWasSet = await setSessionFromAuthData(data);

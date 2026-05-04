@@ -69,6 +69,9 @@ Before writing or changing Next.js-specific code, read the relevant guide in `no
 - Use `@adanft/ui` as the default UI component and design-system source.
 - Before creating a new reusable component, check whether `@adanft/ui` already provides it.
 - Do not invent new components that duplicate existing `@adanft/ui` components.
+- Prefer `@adanft/ui` component contracts and styles first, including Button/icon-button/text-button
+  patterns. If a `Link` must look like a button, style it to preserve the same visual contract as
+  the corresponding `@adanft/ui` Button variant instead of inventing unrelated button styles.
 - Do not invent new colors, backgrounds, text colors, shadows, radii, or visual language outside the `@adanft/ui` design contract unless the user explicitly asks.
 - Respect the predefined background and text color patterns from `@adanft/ui`.
 - Prefer composition of existing design-system primitives over custom one-off markup.

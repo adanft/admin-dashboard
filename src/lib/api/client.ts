@@ -13,6 +13,24 @@ type RequestOptions<TPayload> = {
   payload: TPayload;
 };
 
+type AuthenticatedGetOptions = {
+  path: string;
+  token: string;
+  query?: Record<string, string | number | boolean | null | undefined>;
+};
+
+type AuthenticatedJsonOptions<TPayload> = {
+  method: 'POST' | 'PUT';
+  path: string;
+  token: string;
+  payload: TPayload;
+};
+
+type AuthenticatedDeleteOptions = {
+  path: string;
+  token: string;
+};
+
 type ParsedEnvelopeBody<TData> = Partial<BackendEnvelope<TData>> & {
   code?: string;
   error?: string;
@@ -51,6 +69,106 @@ async function requestJson<TPayload, TData>({ path, payload }: RequestOptions<TP
   }
 
   return envelope.data;
+}
+
+export async function requestAuthenticatedGet<TData>({
+  path,
+  query,
+  token,
+}: AuthenticatedGetOptions) {
+  const response = await fetch(`${getAdminApiBaseUrl()}${path}${serializeQuery(query)}`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    cache: 'no-store',
+  });
+
+  const envelope = await parseEnvelope<TData>(response);
+
+  if (!response.ok || !envelope.success) {
+    throw new AdminApiError({
+      code: envelope.success ? undefined : envelope.code,
+      message: envelope.success ? response.statusText || 'Request failed.' : envelope.error,
+      status: envelope.status || response.status,
+    });
+  }
+
+  return envelope.data;
+}
+
+export async function requestAuthenticatedJson<TPayload, TData>({
+  method,
+  path,
+  payload,
+  token,
+}: AuthenticatedJsonOptions<TPayload>) {
+  const response = await fetch(`${getAdminApiBaseUrl()}${path}`, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+    cache: 'no-store',
+  });
+
+  const envelope = await parseEnvelope<TData>(response);
+
+  if (!response.ok || !envelope.success) {
+    throw new AdminApiError({
+      code: envelope.success ? undefined : envelope.code,
+      message: envelope.success ? response.statusText || 'Request failed.' : envelope.error,
+      status: envelope.status || response.status,
+    });
+  }
+
+  return envelope.data;
+}
+
+export async function requestAuthenticatedDelete({ path, token }: AuthenticatedDeleteOptions) {
+  const response = await fetch(`${getAdminApiBaseUrl()}${path}`, {
+    method: 'DELETE',
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    cache: 'no-store',
+  });
+
+  if (response.status === 204) {
+    return;
+  }
+
+  const envelope = await parseEnvelope<null>(response);
+
+  if (!response.ok || !envelope.success) {
+    throw new AdminApiError({
+      code: envelope.success ? undefined : envelope.code,
+      message: envelope.success ? response.statusText || 'Request failed.' : envelope.error,
+      status: envelope.status || response.status,
+    });
+  }
+}
+
+function serializeQuery(query?: AuthenticatedGetOptions['query']) {
+  if (!query) {
+    return '';
+  }
+
+  const params = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(query)) {
+    if (value !== undefined && value !== null) {
+      params.set(key, String(value));
+    }
+  }
+
+  const serialized = params.toString();
+
+  return serialized ? `?${serialized}` : '';
 }
 
 async function parseEnvelope<TData>(response: Response): Promise<BackendEnvelope<TData>> {
