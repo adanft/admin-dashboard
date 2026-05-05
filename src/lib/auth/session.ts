@@ -99,7 +99,6 @@ function readUserFromJwt(accessToken: string): AdminSessionUser | null {
 
   const firstName = readStringClaim(payload, 'name') ?? readStringClaim(payload, 'given_name');
   const lastName = readStringClaim(payload, 'lastName') ?? readStringClaim(payload, 'family_name');
-  const name = [firstName, lastName].filter(Boolean).join(' ').trim();
   const username =
     readStringClaim(payload, 'username') ?? readStringClaim(payload, 'preferred_username');
   const avatar = readStringClaim(payload, 'avatar') ?? readStringClaim(payload, 'picture');
