@@ -53,6 +53,9 @@ describe('EditUserPage', () => {
     const markup = await renderEditPage('user-2');
 
     expect(getUserMock).toHaveBeenCalledWith('user-2', 'admin-token');
+    expect(markup).toContain('Dashboard');
+    expect(markup).toContain('Users');
+    expect(markup).toContain('href="/users/user-2"');
     expect(markup).toContain('Edit Grace Hopper');
     expect(markup).toContain('name="id"');
     expect(markup).toContain('value="user-2"');

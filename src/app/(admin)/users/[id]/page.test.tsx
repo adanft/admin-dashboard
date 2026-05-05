@@ -40,6 +40,8 @@ describe('UserDetailPage', () => {
     const markup = await renderDetailPage('user-1');
 
     expect(getUserMock).toHaveBeenCalledWith('user-1', 'admin-token');
+    expect(markup).toContain('Dashboard');
+    expect(markup).toContain('Users');
     expect(markup).toContain('Ada Lovelace');
     expect(markup).toContain('ada@example.com');
     expect(markup).toContain('href="/users/user-1/edit"');

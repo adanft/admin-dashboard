@@ -5,6 +5,7 @@ import { Pencil } from 'lucide-react';
 import Link from 'next/link';
 
 import type { UserProfile, UserStatus } from '@/lib/api/users';
+import DashboardUserBreadcrumbs from '../../_components/dashboard-user-breadcrumbs';
 import UserRowDeleteAction from '../_components/user-row-delete-action';
 import { loadUserRouteState, UserRouteMessage } from '../_lib/route-state';
 
@@ -30,18 +31,23 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
   const { id } = await params;
   const state = await loadUserRouteState(id);
 
-  return (
-    <section className="space-y-6 px-6 py-8">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-bold text-heading">User profile</h1>
-      </header>
+  const userLabel = state.status === 'success' ? profileLabel(state.user) : null;
 
-      {state.status === 'success' ? (
-        <UserProfileView user={state.user} />
-      ) : (
-        <UserRouteMessage state={state} />
-      )}
-    </section>
+  return (
+    <>
+      {userLabel ? <DashboardUserBreadcrumbs userLabel={userLabel} /> : null}
+      <section className="space-y-6 px-6 py-8">
+        <header className="space-y-2">
+          <h1 className="text-3xl font-bold text-heading">User profile</h1>
+        </header>
+
+        {state.status === 'success' ? (
+          <UserProfileView user={state.user} />
+        ) : (
+          <UserRouteMessage state={state} />
+        )}
+      </section>
+    </>
   );
 }
 
@@ -104,4 +110,8 @@ function formatDisplayDate(value: string) {
   return Number.isNaN(parsedDate.valueOf())
     ? value
     : new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(parsedDate);
+}
+
+function profileLabel(user: { lastName: string; name: string; username: string }) {
+  return `${user.name} ${user.lastName}`.trim() || user.username;
 }

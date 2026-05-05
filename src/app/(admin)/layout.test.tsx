@@ -25,6 +25,10 @@ vi.mock('./_components/dashboard-navbar-actions', () => ({
   ),
 }));
 
+vi.mock('./_components/dashboard-breadcrumbs', () => ({
+  default: () => <nav aria-label="Breadcrumb">Dashboard breadcrumbs</nav>,
+}));
+
 vi.mock('next/navigation', () => ({
   redirect: mocks.redirect,
   usePathname: mocks.pathname,
@@ -50,6 +54,8 @@ describe('DashboardLayout', () => {
 
     expect(markup).toContain('aria-label="Dashboard navigation"');
     expect(markup).toContain('Admin dashboard logo');
+    expect(markup).toContain('aria-label="Breadcrumb"');
+    expect(markup).toContain('Dashboard breadcrumbs');
     expect(markup).toContain('Private dashboard');
     expect(markup.match(/<main\b/g)).toHaveLength(1);
     expect(markup).toContain('h-16');
