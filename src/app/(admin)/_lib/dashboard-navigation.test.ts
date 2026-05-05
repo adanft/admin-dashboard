@@ -2,7 +2,6 @@ import { IdCard, UserRound } from 'lucide-react';
 import { describe, expect, it } from 'vitest';
 import { dashboardNavigation, isDashboardNavigationItemActive } from './dashboard-navigation';
 
-// biome-ignore lint/nursery/noSecrets: Test subject name is not a secret.
 describe('dashboardNavigation', () => {
   it('defines the future admin destinations separated by requirement section', () => {
     expect(
@@ -16,7 +15,6 @@ describe('dashboardNavigation', () => {
         items: [['My Account', '/account']],
       },
       {
-        // biome-ignore lint/nursery/noSecrets: Static navigation label assertion, not a secret.
         label: 'Administration',
         items: [
           ['Users', '/users'],
@@ -43,7 +41,6 @@ describe('dashboardNavigation', () => {
   });
 });
 
-// biome-ignore lint/nursery/noSecrets: Test subject name is not a secret.
 describe('isDashboardNavigationItemActive', () => {
   it('matches non-root items at exact and descendant pathnames only', () => {
     expect(isDashboardNavigationItemActive('/users', '/users')).toBe(true);

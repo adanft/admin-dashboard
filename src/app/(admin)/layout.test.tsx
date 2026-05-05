@@ -31,7 +31,6 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: mocks.push }),
 }));
 
-// biome-ignore lint/nursery/noSecrets: Test subject name is not a secret.
 describe('DashboardLayout', () => {
   it('redirects missing sessions before rendering private dashboard content', async () => {
     mocks.getSession.mockResolvedValue(null);
@@ -49,7 +48,6 @@ describe('DashboardLayout', () => {
       await DashboardLayout({ children: <h1>Private dashboard</h1> }),
     );
 
-    // biome-ignore lint/nursery/noSecrets: Static accessibility label assertion, not a secret.
     expect(markup).toContain('aria-label="Dashboard navigation"');
     expect(markup).toContain('Admin dashboard logo');
     expect(markup).toContain('Private dashboard');
@@ -68,7 +66,6 @@ describe('DashboardLayout', () => {
 
     expect(markup).toContain('Dashboard');
     expect(markup).toContain('Account');
-    // biome-ignore lint/nursery/noSecrets: Static navigation label assertion, not a secret.
     expect(markup).toContain('Administration');
     expect(markup).toContain('Operations');
     expect(markup).not.toContain('Sign in');

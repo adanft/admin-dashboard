@@ -11,14 +11,12 @@ vi.mock('next/navigation', () => ({
   usePathname: mocks.pathname,
 }));
 
-// biome-ignore lint/nursery/noSecrets: Test subject name is not a secret.
 describe('DashboardSidebar', () => {
   it('renders branded semantic navigation without account subsections as top-level links', () => {
     mocks.pathname.mockReturnValue('/');
 
     const markup = renderToStaticMarkup(<DashboardSidebar />);
 
-    // biome-ignore lint/nursery/noSecrets: Static accessibility label assertion, not a secret.
     expect(markup).toContain('aria-label="Dashboard navigation"');
     expect(markup).toContain('Admin dashboard logo');
     expect(markup).toContain('href="/account"');

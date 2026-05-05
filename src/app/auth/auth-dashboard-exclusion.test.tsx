@@ -23,7 +23,6 @@ describe('auth pages dashboard exclusion', () => {
     expect(markup).toContain('Sign In');
     expect(markup).toContain('Sign in form');
     expect(markup.match(/<main\b/g)).toHaveLength(1);
-    // biome-ignore lint/nursery/noSecrets: Static accessibility label assertion, not a secret.
     expect(markup).not.toContain('aria-label="Dashboard navigation"');
     expect(markup).not.toContain('data-dashboard-sidebar-offset="compact"');
     expect(markup).not.toContain('href="/users"');
@@ -37,7 +36,6 @@ describe('auth pages dashboard exclusion', () => {
     expect(markup).toContain('Setup');
     expect(markup).toContain('Setup form');
     expect(markup.match(/<main\b/g)).toHaveLength(1);
-    // biome-ignore lint/nursery/noSecrets: Static accessibility label assertion, not a secret.
     expect(markup).not.toContain('aria-label="Dashboard navigation"');
     expect(markup).not.toContain('data-dashboard-sidebar-offset="compact"');
     expect(markup).not.toContain('href="/users"');
