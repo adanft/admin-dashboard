@@ -43,6 +43,35 @@ describe('authApi', () => {
     });
   });
 
+  it('posts logout with the backend refresh cookie and accepts 204 responses', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 204 }));
+
+    await expect(authApi.logout({ refreshToken: 'refresh-token' })).resolves.toBeUndefined();
+
+    expect(fetch).toHaveBeenCalledWith('https://admin-api.test/auth/logout', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        Cookie: 'refresh_token=refresh-token',
+      },
+      cache: 'no-store',
+    });
+  });
+
+  it('posts logout without a cookie when the refresh token is unavailable', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 204 }));
+
+    await expect(authApi.logout()).resolves.toBeUndefined();
+
+    expect(fetch).toHaveBeenCalledWith('https://admin-api.test/auth/logout', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+      },
+      cache: 'no-store',
+    });
+  });
+
   it.each([401, 403])(
     'preserves %i error status distinctions from backend envelopes',
     async (status) => {

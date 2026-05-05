@@ -1,15 +1,20 @@
 import { cookies } from 'next/headers';
 
+import type { AdminSession } from '@/lib/auth/session-cookie';
 import DashboardProfileAction from './dashboard-profile-action';
 import DashboardThemeSwitch from './dashboard-theme-switch';
 
-export default async function DashboardNavbarActions() {
+type DashboardNavbarActionsProps = {
+  session: AdminSession;
+};
+
+export default async function DashboardNavbarActions({ session }: DashboardNavbarActionsProps) {
   const isDark = (await cookies()).get('theme')?.value === 'dark';
 
   return (
     <div className="ml-auto flex items-center gap-4">
       <DashboardThemeSwitch initialDark={isDark} />
-      <DashboardProfileAction />
+      {session.user ? <DashboardProfileAction user={session.user} /> : null}
     </div>
   );
 }

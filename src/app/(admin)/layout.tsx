@@ -17,7 +17,7 @@ export default async function DashboardLayout({
 
   return (
     <>
-      <DashboardNavbar />
+      <DashboardNavbar session={session} />
       <DashboardSidebar />
       <main className="min-h-dvh bg-background pt-16 pl-16.25 text-foreground">{children}</main>
     </>

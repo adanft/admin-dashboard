@@ -32,6 +32,24 @@ describe('admin session cookie helpers', () => {
     expect(encoded).not.toContain('permissions');
   });
 
+  it('round-trips sanitized user profile display data', () => {
+    const expiresAt = Date.now() + 60_000;
+    const session = {
+      accessToken: 'access-token',
+      expiresAt,
+      user: {
+        avatar: 'https://cdn.example.com/ada.png',
+        lastName: 'Lovelace',
+        name: 'Ada',
+        username: 'ada',
+      },
+    };
+
+    const encoded = requireEncodedCookie(encodeAdminSession(session));
+
+    expect(decodeAdminSession(encoded)).toEqual(session);
+  });
+
   it('treats missing, malformed, incomplete, and expired values as unauthenticated', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-05-02T00:00:00.000Z'));

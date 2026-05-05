@@ -34,6 +34,12 @@ export type AuthSessionData = {
   expiresIn?: number;
   expiresInSeconds?: number;
   requiredAction?: 'change_password' | string;
+  user?: {
+    avatar?: string | null;
+    lastName?: string | null;
+    name?: string | null;
+    username?: string | null;
+  };
 };
 
 export type AuthActionState = {

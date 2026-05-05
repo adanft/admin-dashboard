@@ -31,6 +31,10 @@ type AuthenticatedDeleteOptions = {
   token: string;
 };
 
+type LogoutOptions = {
+  refreshToken?: string;
+};
+
 type ParsedEnvelopeBody<TData> = Partial<BackendEnvelope<TData>> & {
   code?: string;
   error?: string;
@@ -153,6 +157,36 @@ export async function requestAuthenticatedDelete({ path, token }: AuthenticatedD
   }
 }
 
+async function requestCookiePost({ path, refreshToken }: { path: string; refreshToken?: string }) {
+  const headers: HeadersInit = {
+    Accept: 'application/json',
+  };
+
+  if (refreshToken) {
+    headers.Cookie = `refresh_token=${refreshToken}`;
+  }
+
+  const response = await fetch(`${getAdminApiBaseUrl()}${path}`, {
+    method: 'POST',
+    headers,
+    cache: 'no-store',
+  });
+
+  if (response.status === 204) {
+    return;
+  }
+
+  const envelope = await parseEnvelope<null>(response);
+
+  if (!response.ok || !envelope.success) {
+    throw new AdminApiError({
+      code: envelope.success ? undefined : envelope.code,
+      message: envelope.success ? response.statusText || 'Request failed.' : envelope.error,
+      status: envelope.status || response.status,
+    });
+  }
+}
+
 function serializeQuery(query?: AuthenticatedGetOptions['query']) {
   if (!query) {
     return '';
@@ -208,6 +242,9 @@ async function parseEnvelope<TData>(response: Response): Promise<BackendEnvelope
 export const authApi = {
   login(payload: LoginPayload) {
     return requestJson<LoginPayload, AuthSessionData>({ path: '/auth/login', payload });
+  },
+  logout(options: LogoutOptions = {}) {
+    return requestCookiePost({ path: '/auth/logout', refreshToken: options.refreshToken });
   },
   register(payload: RegisterPayload) {
     return requestJson<RegisterPayload, AuthSessionData>({ path: '/auth/register', payload });

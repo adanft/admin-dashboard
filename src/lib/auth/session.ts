@@ -6,6 +6,7 @@ import type { AuthSessionData } from '@/lib/auth/types';
 import {
   ADMIN_SESSION_COOKIE,
   type AdminSession,
+  type AdminSessionUser,
   decodeAdminSession,
   encodeAdminSession,
 } from './session-cookie';
@@ -58,9 +59,60 @@ export function createSessionFromAuthData(data: AuthSessionData): AdminSession |
     return null;
   }
 
+  const user = resolveSessionUser(data, accessToken);
+
   return {
     accessToken,
     expiresAt: resolveExpiresAt(data, accessToken),
+    ...(user ? { user } : {}),
+  };
+}
+
+function resolveSessionUser(data: AuthSessionData, accessToken: string): AdminSessionUser | null {
+  return readUserFromAuthData(data) ?? readUserFromJwt(accessToken);
+}
+
+function readUserFromAuthData(data: AuthSessionData): AdminSessionUser | null {
+  const firstName = data.user?.name?.trim();
+  const lastName = data.user?.lastName?.trim();
+  const username = data.user?.username?.trim();
+  const avatar = data.user?.avatar?.trim();
+
+  if (!firstName || !lastName || !username) {
+    return null;
+  }
+
+  return {
+    lastName,
+    name: firstName,
+    username,
+    ...(avatar ? { avatar } : {}),
+  };
+}
+
+function readUserFromJwt(accessToken: string): AdminSessionUser | null {
+  const payload = readJwtPayload(accessToken);
+
+  if (!payload) {
+    return null;
+  }
+
+  const firstName = readStringClaim(payload, 'name') ?? readStringClaim(payload, 'given_name');
+  const lastName = readStringClaim(payload, 'lastName') ?? readStringClaim(payload, 'family_name');
+  const name = [firstName, lastName].filter(Boolean).join(' ').trim();
+  const username =
+    readStringClaim(payload, 'username') ?? readStringClaim(payload, 'preferred_username');
+  const avatar = readStringClaim(payload, 'avatar') ?? readStringClaim(payload, 'picture');
+
+  if (!firstName || !lastName || !username) {
+    return null;
+  }
+
+  return {
+    lastName,
+    name: firstName,
+    username,
+    ...(avatar ? { avatar } : {}),
   };
 }
 
@@ -91,24 +143,34 @@ function normalizeExpiresAt(expiresAt: number) {
 }
 
 function readJwtExpiresAt(accessToken: string) {
+  const decoded = readJwtPayload(accessToken);
+
+  return typeof decoded?.exp === 'number' ? decoded.exp * MS_PER_SECOND : null;
+}
+
+function readJwtPayload(accessToken: string) {
   const [, payload] = accessToken.split('.');
 
-  if (!payload) {
-    return null;
-  }
-
   try {
+    if (!payload) {
+      return null;
+    }
+
     const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
     const paddedPayload = normalizedPayload.padEnd(
       normalizedPayload.length + ((4 - (normalizedPayload.length % 4)) % 4),
       '=',
     );
-    const decoded = JSON.parse(Buffer.from(paddedPayload, 'base64').toString('utf8')) as {
-      exp?: unknown;
-    };
-
-    return typeof decoded.exp === 'number' ? decoded.exp * MS_PER_SECOND : null;
+    return JSON.parse(Buffer.from(paddedPayload, 'base64').toString('utf8')) as Record<
+      string,
+      unknown
+    >;
   } catch {
     return null;
   }
+}
+
+function readStringClaim(payload: Record<string, unknown>, key: string) {
+  const value = payload[key];
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
 }

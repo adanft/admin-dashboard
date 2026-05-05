@@ -69,6 +69,51 @@ describe('createSessionFromAuthData', () => {
     });
   });
 
+  it('preserves user profile data from the auth response', () => {
+    expect(
+      createSessionFromAuthData({
+        accessToken: 'token',
+        expiresAt: 1_800_000_000_000,
+        user: {
+          avatar: 'https://cdn.example.com/ada.png',
+          lastName: 'Lovelace',
+          name: 'Ada',
+          username: 'ada',
+        },
+      }),
+    ).toEqual({
+      accessToken: 'token',
+      expiresAt: 1_800_000_000_000,
+      user: {
+        avatar: 'https://cdn.example.com/ada.png',
+        lastName: 'Lovelace',
+        name: 'Ada',
+        username: 'ada',
+      },
+    });
+  });
+
+  it('derives user profile data from JWT claims when the auth response omits it', () => {
+    const accessToken = createJwtWithPayload({
+      exp: 1_800_000_000,
+      family_name: 'Hopper',
+      given_name: 'Grace',
+      picture: 'https://cdn.example.com/grace.png',
+      preferred_username: 'grace',
+    });
+
+    expect(createSessionFromAuthData({ accessToken })).toEqual({
+      accessToken,
+      expiresAt: 1_800_000_000_000,
+      user: {
+        avatar: 'https://cdn.example.com/grace.png',
+        lastName: 'Hopper',
+        name: 'Grace',
+        username: 'grace',
+      },
+    });
+  });
+
   it('falls back to the default session TTL when no usable expiry exists', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-05-02T00:00:00.000Z'));

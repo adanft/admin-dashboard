@@ -8,6 +8,14 @@ const SESSION_SECRET_ENV = 'ADMIN_SESSION_SECRET';
 export type AdminSession = {
   accessToken: string;
   expiresAt: number;
+  user?: AdminSessionUser;
+};
+
+export type AdminSessionUser = {
+  avatar?: string;
+  lastName: string;
+  name: string;
+  username: string;
 };
 
 export function encodeAdminSession(session: AdminSession) {
@@ -57,13 +65,39 @@ export function decodeAdminSession(value: string | undefined) {
       return null;
     }
 
+    const user = parseSessionUser(session.user);
+
     return {
       accessToken: session.accessToken,
       expiresAt: session.expiresAt,
+      ...(user ? { user } : {}),
     } satisfies AdminSession;
   } catch {
     return null;
   }
+}
+
+function parseSessionUser(value: unknown): AdminSessionUser | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const user = value as Partial<Record<keyof AdminSessionUser, unknown>>;
+  const name = typeof user.name === 'string' ? user.name.trim() : '';
+  const lastName = typeof user.lastName === 'string' ? user.lastName.trim() : '';
+  const username = typeof user.username === 'string' ? user.username.trim() : '';
+  const avatar = typeof user.avatar === 'string' ? user.avatar.trim() : '';
+
+  if (!name || !lastName || !username) {
+    return null;
+  }
+
+  return {
+    lastName,
+    name,
+    username,
+    ...(avatar ? { avatar } : {}),
+  };
 }
 
 function getSessionSecret() {
