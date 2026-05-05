@@ -6,6 +6,7 @@ import DashboardLayout from './layout';
 const mocks = vi.hoisted(() => ({
   getSession: vi.fn(),
   pathname: vi.fn(() => '/'),
+  push: vi.fn(),
   redirect: vi.fn((path: string) => {
     throw new Error(`NEXT_REDIRECT:${path}`);
   }),
@@ -15,9 +16,19 @@ vi.mock('@/lib/auth/session', () => ({
   getSession: mocks.getSession,
 }));
 
+vi.mock('./_components/dashboard-navbar-actions', () => ({
+  default: () => (
+    <div className="ml-auto flex items-center gap-4">
+      <span>Toggle theme</span>
+      <span>AD</span>
+    </div>
+  ),
+}));
+
 vi.mock('next/navigation', () => ({
   redirect: mocks.redirect,
   usePathname: mocks.pathname,
+  useRouter: () => ({ push: mocks.push }),
 }));
 
 // biome-ignore lint/nursery/noSecrets: Test subject name is not a secret.
@@ -43,7 +54,11 @@ describe('DashboardLayout', () => {
     expect(markup).toContain('Admin dashboard logo');
     expect(markup).toContain('Private dashboard');
     expect(markup.match(/<main\b/g)).toHaveLength(1);
-    expect(markup).toContain('data-dashboard-sidebar-offset="compact"');
+    expect(markup).toContain('h-16');
+    expect(markup).toContain('border-b');
+    expect(markup).toContain('shadow-card');
+    expect(markup).toContain('Toggle theme');
+    expect(markup).toContain('AD');
   });
 
   it('separates the future admin sections in the authenticated dashboard layout', async () => {

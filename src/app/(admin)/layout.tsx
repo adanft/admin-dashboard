@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation';
 
 import { getSession } from '@/lib/auth/session';
-import DashboardSidebar from './dashboard-sidebar';
+import DashboardNavbar from './_components/dashboard-navbar';
+import DashboardSidebar from './_components/dashboard-sidebar';
 
 export default async function DashboardLayout({
   children,
@@ -16,13 +17,9 @@ export default async function DashboardLayout({
 
   return (
     <>
+      <DashboardNavbar />
       <DashboardSidebar />
-      <main
-        className="min-h-dvh bg-background pl-16.25 text-foreground"
-        data-dashboard-sidebar-offset="compact"
-      >
-        {children}
-      </main>
+      <main className="min-h-dvh bg-background pt-16 pl-16.25 text-foreground">{children}</main>
     </>
   );
 }
