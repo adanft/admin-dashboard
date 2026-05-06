@@ -27,6 +27,7 @@ export default function DashboardProfileAction({ user }: DashboardProfileActionP
       name={displayName}
       onAction={() => startTransition(() => void logoutAction())}
       username={user.username}
+      avatarSize="sm"
     />
   );
 }

@@ -18,7 +18,7 @@ describe('DashboardSidebar', () => {
     const markup = renderToStaticMarkup(<DashboardSidebar />);
 
     expect(markup).toContain('aria-label="Dashboard navigation"');
-    expect(markup).toContain('Admin dashboard logo');
+    expect(markup).toContain('Dashboard logo');
     expect(markup).toContain('href="/account"');
     expect(markup).toContain('My Account');
     expect(markup).not.toContain('href="/account/sessions"');
@@ -59,7 +59,6 @@ describe('DashboardSidebar', () => {
 
     expect(markup).toContain('href="/"');
     expect(markup).not.toContain('href="/" aria-current="page"');
-    expect(markup).not.toContain('>Dashboard</span>');
   });
 
   it('does not mark any navigation item current for unknown future routes', () => {

@@ -13,7 +13,7 @@ export default function DashboardSidebar() {
 
   return (
     <Sidebar aria-label="Dashboard navigation" state={isExpanded} action={setIsExpanded}>
-      <SidebarHead href="/" logoSrc="/logo.png" title="Admin dashboard" />
+      <SidebarHead href="/" logoSrc="/logo.png" title="Dashboard" />
       <SidebarBody>
         {dashboardNavigation.map((section) => {
           const activeItems = section.items.map((item) => ({
