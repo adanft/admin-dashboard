@@ -27,6 +27,25 @@ Install dependencies:
 pnpm install
 ```
 
+Configure the external admin API base URL:
+
+```bash
+ADMIN_API_BASE_URL="http://localhost:8080"
+```
+
+`ADMIN_API_BASE_URL` must be an absolute `http` or `https` URL. A trailing slash is accepted.
+
+Configure session signing secret material for production:
+
+```bash
+ADMIN_SESSION_SECRET="replace-with-a-long-random-secret"
+```
+
+`ADMIN_SESSION_SECRET` signs the HttpOnly `admin_session` cookie so it is tamper-evident.
+Development and test environments can derive fallback signing material from local runtime settings to
+avoid blocking setup, but production requires an explicit secret. Without it, sessions fail closed and
+the app will not set or accept `admin_session` cookies.
+
 Run the development server:
 
 ```bash
@@ -35,6 +54,14 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+## Current capabilities
+
+- Session-backed admin authentication with HttpOnly cookie storage and logout support.
+- Dashboard shell with sidebar navigation, top navbar, profile action, and contextual breadcrumbs.
+- Users management with list, search, pagination, create, detail, edit, delete, and role assignment flows.
+- Roles management with list, search, pagination, create, detail, edit, delete, and permission assignment flows.
+- Permission assignment uses bulk API contracts for role and user updates.
+
 ## Scripts
 
 | Command | Description |
@@ -42,6 +69,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 | `pnpm dev` | Start the Next.js development server. |
 | `pnpm build` | Build the production application. |
 | `pnpm start` | Start the production server after building. |
+| `pnpm test` | Run the Vitest behavioral test suite. |
 | `pnpm lint` | Run Biome checks locally. |
 | `pnpm lint:fix` | Run Biome and write safe fixes, formatting, and import organization. |
 | `pnpm lint:ci` | Run Biome in CI mode without writing files. |

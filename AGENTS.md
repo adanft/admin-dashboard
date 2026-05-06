@@ -69,6 +69,9 @@ Before writing or changing Next.js-specific code, read the relevant guide in `no
 - Use `@adanft/ui` as the default UI component and design-system source.
 - Before creating a new reusable component, check whether `@adanft/ui` already provides it.
 - Do not invent new components that duplicate existing `@adanft/ui` components.
+- Prefer `@adanft/ui` component contracts and styles first, including Button/icon-button/text-button
+  patterns. If a `Link` must look like a button, style it to preserve the same visual contract as
+  the corresponding `@adanft/ui` Button variant instead of inventing unrelated button styles.
 - Do not invent new colors, backgrounds, text colors, shadows, radii, or visual language outside the `@adanft/ui` design contract unless the user explicitly asks.
 - Respect the predefined background and text color patterns from `@adanft/ui`.
 - Prefer composition of existing design-system primitives over custom one-off markup.
@@ -86,6 +89,9 @@ Before writing or changing Next.js-specific code, read the relevant guide in `no
 - Avoid decorative Tailwind classes that add no functional, layout, accessibility, or design-system value.
 - Avoid redundant classes already provided by `@adanft/ui` components.
 - Keep spacing, typography, backgrounds, borders, and text colors aligned with existing `@adanft/ui` defaults.
+- Prefer named Tailwind spacing utilities for layout offsets, including project-defined fractional
+  spacing such as `pl-16.25`, instead of arbitrary values like `pl-[65px]` when the value is part
+  of the design/layout convention.
 - Do not create local color scales or arbitrary color values unless explicitly approved.
 - Do not enable experimental Tailwind class sorting rules unless explicitly requested.
 - Do not add local Tailwind-specific agent skills for this project unless explicitly requested; project styling rules belong in this file for now.
