@@ -54,6 +54,14 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+## Current capabilities
+
+- Session-backed admin authentication with HttpOnly cookie storage and logout support.
+- Dashboard shell with sidebar navigation, top navbar, profile action, and contextual breadcrumbs.
+- Users management with list, search, pagination, create, detail, edit, delete, and role assignment flows.
+- Roles management with list, search, pagination, create, detail, edit, delete, and permission assignment flows.
+- Permission assignment uses bulk API contracts for role and user updates.
+
 ## Scripts
 
 | Command | Description |
