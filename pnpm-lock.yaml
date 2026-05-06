@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@adanft/ui':
-        specifier: 0.2.0-beta.1
-        version: 0.2.0-beta.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.4)
+        specifier: 0.2.0-beta.2
+        version: 0.2.0-beta.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.4)
       lucide-react:
         specifier: ^1.14.0
         version: 1.14.0(react@19.2.4)
@@ -51,8 +51,8 @@ importers:
 
 packages:
 
-  '@adanft/ui@0.2.0-beta.1':
-    resolution: {integrity: sha512-Tl8zaj8WrQxB3DbkVgQE7WWyTVtHb468rznUrn0g6ORpGdiENe6rmf0P31nBhXtjO3g55XrRseIw41hDFwbwig==}
+  '@adanft/ui@0.2.0-beta.2':
+    resolution: {integrity: sha512-cwneKE5/WJzPdT+lDdA0EG89rxYXoiaLrMbFFSbYh0/sMBDxV1vR8t7zCKi47qf+0SXwnO/FWCXmYfJlDAtNEg==}
     peerDependencies:
       react: ^19.2.5
       react-dom: ^19.2.5
@@ -1019,7 +1019,7 @@ packages:
 
 snapshots:
 
-  '@adanft/ui@0.2.0-beta.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.4)':
+  '@adanft/ui@0.2.0-beta.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.4)':
     dependencies:
       '@floating-ui/react': 0.27.19(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4

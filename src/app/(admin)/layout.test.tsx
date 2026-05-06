@@ -53,7 +53,7 @@ describe('DashboardLayout', () => {
     );
 
     expect(markup).toContain('aria-label="Dashboard navigation"');
-    expect(markup).toContain('Admin dashboard logo');
+    expect(markup).toContain('Dashboard logo');
     expect(markup).toContain('aria-label="Breadcrumb"');
     expect(markup).toContain('Dashboard breadcrumbs');
     expect(markup).toContain('Private dashboard');
