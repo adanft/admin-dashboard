@@ -12,7 +12,7 @@ type UserActionField = keyof CreateUserPayload;
 export type UserActionValues = Partial<UserProfilePayload>;
 
 export type UserActionState = {
-  status?: 'idle' | 'error';
+  status?: 'idle' | 'error' | 'success';
   message?: string;
   fieldErrors?: Partial<Record<UserActionField, string>>;
   values?: UserActionValues;
@@ -91,6 +91,47 @@ export async function deleteUserAction(
   revalidatePath('/users');
   revalidatePath(`/users/${id}`);
   redirect('/users');
+}
+
+export async function updateUserRolesAction(
+  _previousState: UserActionState,
+  formData: FormData,
+): Promise<UserActionState> {
+  const userId = readRequiredText(formData, 'userId');
+  // biome-ignore lint/nursery/noSecrets: These are public form field names, not secret values.
+  const currentRoleIds = readTextList(formData, 'currentRoleIds');
+  const selectedRoleIds = readTextList(formData, 'roleIds');
+
+  if (!userId) {
+    return { status: 'error', message: 'User profile is missing.' };
+  }
+
+  const token = await readSessionToken();
+  if (!token) {
+    return { status: 'error', message: EXPIRED_SESSION_MESSAGE };
+  }
+
+  try {
+    const currentRoleIdSet = new Set(currentRoleIds);
+    const selectedRoleIdSet = new Set(selectedRoleIds);
+    const roleIdsToAssign = selectedRoleIds.filter((roleId) => !currentRoleIdSet.has(roleId));
+    const roleIdsToRemove = currentRoleIds.filter((roleId) => !selectedRoleIdSet.has(roleId));
+
+    if (roleIdsToAssign.length > 0) {
+      await usersApi.assignRoles(userId, roleIdsToAssign, token);
+    }
+
+    if (roleIdsToRemove.length > 0) {
+      await usersApi.removeRoles(userId, roleIdsToRemove, token);
+    }
+
+    revalidatePath('/users');
+    revalidatePath(`/users/${userId}`);
+    revalidatePath(`/users/${userId}/roles`);
+    return { status: 'success', message: 'User roles updated.' };
+  } catch (error) {
+    return { status: 'error', message: getRoleMutationErrorMessage(error) };
+  }
 }
 
 async function createUser(payload: CreateUserPayload, values: UserActionValues) {
@@ -324,6 +365,30 @@ function getDeleteUserErrorMessage(error: unknown) {
   return 'Unable to delete this user right now.';
 }
 
+function getRoleMutationErrorMessage(error: unknown) {
+  if (!isAdminApiError(error)) {
+    return 'Unable to update user roles right now.';
+  }
+
+  if (error.status === 400) {
+    return 'Choose at least one valid role.';
+  }
+
+  if (error.status === 401) {
+    return EXPIRED_SESSION_MESSAGE;
+  }
+
+  if (error.status === 403) {
+    return 'You do not have permission to update user roles.';
+  }
+
+  if (error.status === 404) {
+    return 'This user or role was not found.';
+  }
+
+  return 'Unable to update user roles right now.';
+}
+
 function readRequiredText(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === 'string' && value.trim() ? value.trim() : null;
@@ -332,4 +397,11 @@ function readRequiredText(formData: FormData, key: string) {
 function readOptionalText(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === 'string' ? value.trim() || null : null;
+}
+
+function readTextList(formData: FormData, key: string) {
+  return formData
+    .getAll(key)
+    .filter((value): value is string => typeof value === 'string' && Boolean(value.trim()))
+    .map((value) => value.trim());
 }

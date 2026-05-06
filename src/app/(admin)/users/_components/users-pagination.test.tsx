@@ -44,13 +44,13 @@ describe('UsersPagination', () => {
     expect(footMarkup).toContain('aria-label="Previous page"');
   });
 
-  it('defaults the pagination head page size to 10 when the backend omits a limit', () => {
+  it('defaults the pagination head page size to 50 when the backend omits a limit', () => {
     const headMarkup = renderToStaticMarkup(
       <UsersPaginationHead pagination={{ total: 42, limit: 0, offset: 0 }} total={42} />,
     );
 
     expect(headMarkup).toContain('users per page:');
-    expect(headMarkup).toContain('<option value="10" selected="">10</option>');
+    expect(headMarkup).toContain('<option value="50" selected="">50</option>');
   });
 });
 

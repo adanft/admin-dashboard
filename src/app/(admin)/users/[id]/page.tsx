@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 import type { UserProfile, UserStatus } from '@/lib/api/users';
 import DashboardUserBreadcrumbs from '../../_components/dashboard-user-breadcrumbs';
+import UserRolesView from '../_components/user-roles-view';
 import UserRowDeleteAction from '../_components/user-row-delete-action';
 import { loadUserRouteState, UserRouteMessage } from '../_lib/route-state';
 
@@ -42,7 +43,10 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
         </header>
 
         {state.status === 'success' ? (
-          <UserProfileView user={state.user} />
+          <>
+            <UserProfileView user={state.user} />
+            <UserRolesView roles={state.user.roles} userId={state.user.id} />
+          </>
         ) : (
           <UserRouteMessage state={state} />
         )}

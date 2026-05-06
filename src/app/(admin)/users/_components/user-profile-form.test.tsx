@@ -64,6 +64,7 @@ describe('UserProfileForm', () => {
           lastName: 'Hopper',
           username: 'grace',
           email: 'grace@example.com',
+          roles: [],
           status: 'active',
           createdAt: '2026-01-02T03:04:05.000Z',
           updatedAt: '2026-02-03T04:05:06.000Z',

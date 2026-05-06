@@ -1,6 +1,7 @@
 import Box from '@adanft/ui/box';
 
 import { isAdminApiError } from '@/lib/api/client';
+import { type RoleSummary, rolesApi } from '@/lib/api/roles';
 import type { UserProfile } from '@/lib/api/users';
 import { usersApi } from '@/lib/api/users';
 import { getSession } from '@/lib/auth/session';
@@ -13,6 +14,10 @@ export type UserRouteState =
       title: string;
     };
 
+export type UserRolesRouteState =
+  | { status: 'success'; availableRoles: RoleSummary[]; rolesError?: string; user: UserProfile }
+  | Exclude<UserRouteState, { status: 'success' }>;
+
 const EXPIRED_SESSION_TITLE = 'Your session expired. Please sign in again.';
 
 export async function loadUserRouteState(id: string): Promise<UserRouteState> {
@@ -24,6 +29,30 @@ export async function loadUserRouteState(id: string): Promise<UserRouteState> {
 
   try {
     return { status: 'success', user: await usersApi.getUser(id, session.accessToken) };
+  } catch (error) {
+    return mapUserRouteError(error);
+  }
+}
+
+export async function loadUserRolesRouteState(id: string): Promise<UserRolesRouteState> {
+  const session = await getSession();
+
+  if (!session?.accessToken) {
+    return userRouteMessage('unauthorized');
+  }
+
+  try {
+    const user = await usersApi.getUser(id, session.accessToken);
+    const rolesResult = await rolesApi.listRoles({ limit: 100, offset: 0 }, session.accessToken);
+
+    return {
+      status: 'success',
+      user,
+      availableRoles: rolesResult.status === 'success' ? rolesResult.data.rows : [],
+      ...(rolesResult.status === 'success'
+        ? {}
+        : { rolesError: 'Unable to load available roles right now.' }),
+    };
   } catch (error) {
     return mapUserRouteError(error);
   }

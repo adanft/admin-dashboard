@@ -6,7 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import type { UsersListPagination } from '@/lib/api/users';
 
-const USERS_PAGE_SIZE_OPTIONS = [10, 25, 50];
+const USERS_PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 
 type UsersPaginationProps = {
   pagination: UsersListPagination;
@@ -82,5 +82,5 @@ export function buildUsersPaginationHref(
 }
 
 function normalizePageSize(value: number) {
-  return USERS_PAGE_SIZE_OPTIONS.includes(value) ? value : USERS_PAGE_SIZE_OPTIONS[0];
+  return USERS_PAGE_SIZE_OPTIONS.includes(value) ? value : 50;
 }

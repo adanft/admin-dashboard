@@ -66,7 +66,7 @@ describe('normalizeUsersListQuery', () => {
     ).toEqual({
       sort: 'created_at',
       order: 'desc',
-      limit: 10,
+      limit: 50,
       offset: 0,
     });
   });
@@ -75,8 +75,8 @@ describe('normalizeUsersListQuery', () => {
 describe('toUsersListBackendQuery', () => {
   it('sends the default page size while omitting sort, order, and offset defaults', () => {
     expect(
-      toUsersListBackendQuery({ sort: 'created_at', order: 'desc', limit: 10, offset: 0 }),
-    ).toEqual({ limit: 10 });
+      toUsersListBackendQuery({ sort: 'created_at', order: 'desc', limit: 50, offset: 0 }),
+    ).toEqual({ limit: 50 });
   });
 
   it('keeps explicit filters, pagination, and non-default sort options', () => {
@@ -112,7 +112,15 @@ describe('mapUsersListResponse', () => {
             avatar: 'https://cdn.example.com/ada.png',
             email: 'ada@example.com',
             status: 'active',
-            roles: ['admin', 'user'],
+            roles: [
+              {
+                id: 'role-1',
+                key: 'admin',
+                displayName: 'Administrator',
+                status: 'active',
+                isSystem: true,
+              },
+            ],
             created_at: '2026-01-02T03:04:05.000Z',
             updated_at: '2026-02-03T04:05:06.000Z',
           },
@@ -135,7 +143,16 @@ describe('mapUsersListResponse', () => {
           avatar: 'https://cdn.example.com/ada.png',
           email: 'ada@example.com',
           status: 'active',
-          roleSummary: 'admin, user',
+          roles: [
+            {
+              id: 'role-1',
+              key: 'admin',
+              displayName: 'Administrator',
+              status: 'active',
+              isSystem: true,
+            },
+          ],
+          roleSummary: 'Administrator',
           createdAt: '2026-01-02T03:04:05.000Z',
           updatedAt: '2026-02-03T04:05:06.000Z',
         },
@@ -145,6 +162,7 @@ describe('mapUsersListResponse', () => {
           username: '—',
           email: 'grace@example.com',
           status: 'locked',
+          roles: [],
           roleSummary: '—',
           createdAt: '2026-03-04T05:06:07.000Z',
           updatedAt: '2026-04-05T06:07:08.000Z',
@@ -158,7 +176,7 @@ describe('mapUsersListResponse', () => {
   it('returns an empty list when the backend users collection is empty', () => {
     expect(mapUsersListResponse({ items: [], pagination: { total: 0 } })).toEqual({
       rows: [],
-      pagination: { total: 0, limit: 10, offset: 0 },
+      pagination: { total: 0, limit: 50, offset: 0 },
       total: 0,
     });
   });
@@ -190,6 +208,15 @@ describe('mapUserProfileResponse', () => {
         email: 'ada@example.com',
         avatar: 'https://cdn.example.com/ada.png',
         status: 'active',
+        roles: [
+          {
+            id: 'role-1',
+            key: 'admin',
+            displayName: 'Administrator',
+            status: 'active',
+            isSystem: true,
+          },
+        ],
         created_at: '2026-01-02T03:04:05.000Z',
         updated_at: '2026-02-03T04:05:06.000Z',
       }),
@@ -200,20 +227,31 @@ describe('mapUserProfileResponse', () => {
       username: 'ada',
       email: 'ada@example.com',
       avatar: 'https://cdn.example.com/ada.png',
+      roles: [
+        {
+          id: 'role-1',
+          key: 'admin',
+          displayName: 'Administrator',
+          status: 'active',
+          isSystem: true,
+        },
+      ],
       status: 'active',
       createdAt: '2026-01-02T03:04:05.000Z',
       updatedAt: '2026-02-03T04:05:06.000Z',
     });
   });
 
-  it('uses safe fallbacks without exposing role or session fields', () => {
+  it('uses safe fallbacks without exposing session fields', () => {
     expect(
       mapUserProfileResponse({
         id: 'user-2',
         name: 'Grace',
         username: 'grace',
         email: 'grace@example.com',
-        roles: ['owner'],
+        roles: [
+          { id: 'role-2', key: 'owner', displayName: 'Owner', status: 'active', isSystem: true },
+        ],
         sessions: [{ id: 'session-1' }],
         status: 'root',
       }),
@@ -223,6 +261,15 @@ describe('mapUserProfileResponse', () => {
       lastName: '',
       username: 'grace',
       email: 'grace@example.com',
+      roles: [
+        {
+          id: 'role-2',
+          key: 'owner',
+          displayName: 'Owner',
+          status: 'active',
+          isSystem: true,
+        },
+      ],
       status: 'disabled',
       createdAt: '—',
       updatedAt: '—',
@@ -268,7 +315,15 @@ describe('usersApi.listUsers contract', () => {
                 avatar: 'https://cdn.example.com/ada.png',
                 email: 'ada@example.com',
                 status: 'disabled',
-                roles: ['admin'],
+                roles: [
+                  {
+                    id: 'role-1',
+                    key: 'admin',
+                    displayName: 'Administrator',
+                    status: 'active',
+                    isSystem: true,
+                  },
+                ],
                 created_at: '2026-01-02T03:04:05.000Z',
               },
             ],
@@ -296,7 +351,16 @@ describe('usersApi.listUsers contract', () => {
             avatar: 'https://cdn.example.com/ada.png',
             email: 'ada@example.com',
             status: 'disabled',
-            roleSummary: 'admin',
+            roles: [
+              {
+                id: 'role-1',
+                key: 'admin',
+                displayName: 'Administrator',
+                status: 'active',
+                isSystem: true,
+              },
+            ],
+            roleSummary: 'Administrator',
             createdAt: '2026-01-02T03:04:05.000Z',
             updatedAt: '—',
           },
@@ -330,10 +394,10 @@ describe('usersApi.listUsers contract', () => {
       ),
     );
 
-    await usersApi.listUsers({ sort: 'created_at', order: 'desc', limit: 10, offset: 0 }, 'token');
+    await usersApi.listUsers({ sort: 'created_at', order: 'desc', limit: 50, offset: 0 }, 'token');
 
     expect(fetch).toHaveBeenCalledWith(
-      'https://admin-api.test/users?limit=10',
+      'https://admin-api.test/users?limit=50',
       expect.objectContaining({ method: 'GET' }),
     );
   });
@@ -409,6 +473,7 @@ describe('usersApi CRUD contract', () => {
       lastName: 'Lovelace',
       username: 'ada',
       email: 'ada@example.com',
+      roles: [],
       status: 'pending_password_change',
       createdAt: '—',
       updatedAt: '—',
@@ -516,6 +581,30 @@ describe('usersApi CRUD contract', () => {
     expect(fetch).toHaveBeenCalledWith(
       'https://admin-api.test/users/user-3',
       expect.objectContaining({ method: 'DELETE' }),
+    );
+  });
+
+  it('mutates user roles with bulk JSON POST and DELETE endpoints', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 204 }));
+
+    await usersApi.assignRoles('user-1', ['role-1', 'role-2'], 'access-token');
+    await usersApi.removeRoles('user-1', ['role-3'], 'access-token');
+
+    expect(fetch).toHaveBeenNthCalledWith(
+      1,
+      'https://admin-api.test/users/user-1/roles',
+      expect.objectContaining({
+        body: JSON.stringify({ roleIds: ['role-1', 'role-2'] }),
+        method: 'POST',
+      }),
+    );
+    expect(fetch).toHaveBeenNthCalledWith(
+      2,
+      'https://admin-api.test/users/user-1/roles',
+      expect.objectContaining({
+        body: JSON.stringify({ roleIds: ['role-3'] }),
+        method: 'DELETE',
+      }),
     );
   });
 

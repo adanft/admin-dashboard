@@ -49,6 +49,10 @@ describe('UserDetailPage', () => {
     expect(markup).toContain('border-heading');
     expect(markup).toContain('text-heading');
     expect(markup).toContain('aria-label="Delete Ada Lovelace"');
+    expect(markup).toContain('Assigned roles and access profiles');
+    expect(markup).toContain('Administrator');
+    expect(markup).toContain('href="/users/user-1/roles"');
+    expect(markup).toContain('Modify');
     expect(markup).toContain('border-danger');
     expect(markup).toContain('text-danger');
     expect(markup).toContain('rounded-full');
@@ -91,6 +95,15 @@ function profile(): UserProfile {
     lastName: 'Lovelace',
     username: 'ada',
     email: 'ada@example.com',
+    roles: [
+      {
+        id: 'role-1',
+        key: 'admin',
+        displayName: 'Administrator',
+        status: 'active',
+        isSystem: true,
+      },
+    ],
     status: 'active',
     createdAt: '2026-01-02T03:04:05.000Z',
     updatedAt: '2026-02-03T04:05:06.000Z',

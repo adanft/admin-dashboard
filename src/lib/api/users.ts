@@ -7,11 +7,12 @@ import {
   requestAuthenticatedGet,
   requestAuthenticatedJson,
 } from '@/lib/api/client';
+import type { RoleStatus } from '@/lib/api/roles';
 
 export type UserStatus = 'active' | 'disabled' | 'locked' | 'pending_password_change';
 export type UsersListSort = 'created_at' | 'updated_at' | 'username' | 'email' | 'status';
 export type UsersListOrder = 'asc' | 'desc';
-export type UsersListLimit = 10 | 25 | 50;
+export type UsersListLimit = 10 | 25 | 50 | 100;
 
 export type UsersListQuery = {
   search?: string;
@@ -33,9 +34,18 @@ export type UsersListRow = {
   avatar?: string;
   email: string;
   status: UserStatus;
+  roles: UserRoleSummary[];
   roleSummary: string;
   createdAt: string;
   updatedAt: string;
+};
+
+export type UserRoleSummary = {
+  id: string;
+  key: string;
+  displayName: string;
+  status: RoleStatus;
+  isSystem: boolean;
 };
 
 export type UsersList = {
@@ -70,22 +80,27 @@ export type UpdateUserPayload = UserProfilePayload;
 
 export type UserProfile = UserProfilePayload & {
   id: string;
+  roles: UserRoleSummary[];
   status: UserStatus;
   createdAt: string;
   updatedAt: string;
 };
 
+export type UserRolesPayload = {
+  roleIds: string[];
+};
+
 const DEFAULT_QUERY: UsersListQuery = {
   sort: 'created_at',
   order: 'desc',
-  limit: 10,
+  limit: 50,
   offset: 0,
 };
 
 const USER_STATUSES = ['active', 'disabled', 'locked', 'pending_password_change'] as const;
 const USERS_LIST_SORTS = ['created_at', 'updated_at', 'username', 'email', 'status'] as const;
 const USERS_LIST_ORDERS = ['asc', 'desc'] as const;
-const USERS_LIST_LIMITS = [10, 25, 50] as const;
+const USERS_LIST_LIMITS = [10, 25, 50, 100] as const;
 const USERS_LIST_SORT_ALIASES = {
   createdAt: 'created_at',
   updatedAt: 'updated_at',
@@ -155,6 +170,7 @@ export function mapUsersListResponse(response: unknown): UsersList {
 
 export function mapUserProfileResponse(response: unknown): UserProfile {
   const profile = isRecord(response) ? response : {};
+  const roles = mapEmbeddedRoles(profile.roles);
 
   return {
     id: readString(profile.id) ?? 'unknown-user',
@@ -163,6 +179,7 @@ export function mapUserProfileResponse(response: unknown): UserProfile {
     username: readString(profile.username) ?? '',
     email: readString(profile.email) ?? '',
     ...(readString(profile.avatar) ? { avatar: readString(profile.avatar) } : {}),
+    roles,
     status: parseOption(readString(profile.status), USER_STATUSES) ?? 'disabled',
     createdAt: readString(profile.created_at) ?? readString(profile.createdAt) ?? '—',
     updatedAt: readString(profile.updated_at) ?? readString(profile.updatedAt) ?? '—',
@@ -232,6 +249,22 @@ export const usersApi = {
   deleteUser(id: string, token: string): Promise<void> {
     return requestAuthenticatedDelete({ path: `/users/${encodeURIComponent(id)}`, token });
   },
+  assignRoles(userId: string, roleIds: string[], token: string): Promise<void> {
+    return requestAuthenticatedJson<UserRolesPayload, void>({
+      method: 'POST',
+      path: `/users/${encodeURIComponent(userId)}/roles`,
+      payload: { roleIds },
+      token,
+    });
+  },
+  removeRoles(userId: string, roleIds: string[], token: string): Promise<void> {
+    return requestAuthenticatedJson<UserRolesPayload, void>({
+      method: 'DELETE',
+      path: `/users/${encodeURIComponent(userId)}/roles`,
+      payload: { roleIds },
+      token,
+    });
+  },
 };
 
 function mapUserRow(user: unknown): UsersListRow {
@@ -242,9 +275,11 @@ function mapUserRow(user: unknown): UsersListRow {
   const name = readString(row.name) ?? readString(row.fullName) ?? 'Unnamed user';
   const avatar = readString(row.avatar);
   const status = parseOption(readString(row.status), USER_STATUSES) ?? 'disabled';
-  const roles = Array.isArray(row.roles)
-    ? row.roles.filter((role) => typeof role === 'string')
-    : [];
+  const roles = mapEmbeddedRoles(row.roles);
+  const legacyRoles =
+    roles.length === 0 && Array.isArray(row.roles)
+      ? row.roles.filter((role): role is string => typeof role === 'string')
+      : [];
 
   return {
     id,
@@ -253,10 +288,40 @@ function mapUserRow(user: unknown): UsersListRow {
     ...(avatar ? { avatar } : {}),
     email,
     status,
-    roleSummary: roles.length > 0 ? roles.join(', ') : '—',
+    roles,
+    roleSummary: formatRoleSummary(roles, legacyRoles),
     createdAt: readString(row.created_at) ?? readString(row.createdAt) ?? '—',
     updatedAt: readUpdatedAt(row),
   };
+}
+
+function mapEmbeddedRoles(value: unknown): UserRoleSummary[] {
+  if (!Array.isArray(value)) return [];
+
+  return value.flatMap((role) => {
+    if (!isRecord(role)) return [];
+
+    const key = readString(role.key);
+    const id = readString(role.id) ?? key;
+
+    if (!id || !key) return [];
+
+    return [
+      {
+        id,
+        key,
+        displayName: readString(role.displayName) ?? readString(role.display_name) ?? key,
+        status: parseOption(readString(role.status), ['active', 'disabled'] as const) ?? 'disabled',
+        isSystem: readBoolean(role.isSystem) ?? readBoolean(role.is_system) ?? false,
+      },
+    ];
+  });
+}
+
+function formatRoleSummary(roles: UserRoleSummary[], legacyRoles: string[] = []) {
+  if (roles.length > 0) return roles.map((role) => role.displayName).join(', ');
+  if (legacyRoles.length > 0) return legacyRoles.join(', ');
+  return '—';
 }
 
 function readUpdatedAt(row: Record<string, unknown>) {
@@ -315,6 +380,10 @@ function parseOffset(value: string | undefined) {
 
 function readString(value: unknown) {
   return typeof value === 'string' && value.length > 0 ? value : undefined;
+}
+
+function readBoolean(value: unknown) {
+  return typeof value === 'boolean' ? value : undefined;
 }
 
 function readNonNegativeNumber(value: unknown) {

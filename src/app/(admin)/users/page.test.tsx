@@ -98,6 +98,7 @@ describe('UsersPage', () => {
             username: 'grace',
             email: 'grace@example.com',
             status: 'locked',
+            roles: [],
             roleSummary: 'user',
             createdAt: '—',
             updatedAt: '—',
@@ -160,7 +161,7 @@ describe('UsersPage', () => {
     const markup = await renderUsersPage();
 
     expect(listUsersMock).toHaveBeenCalledWith(
-      { sort: 'created_at', order: 'desc', limit: 10, offset: 0 } satisfies UsersListQuery,
+      { sort: 'created_at', order: 'desc', limit: 50, offset: 0 } satisfies UsersListQuery,
       'admin-token',
     );
     expect(markup).toContain('name="search"');
@@ -192,7 +193,7 @@ describe('UsersPage', () => {
   it('renders an accessible empty state for successful empty responses', async () => {
     listUsersMock.mockResolvedValue({
       status: 'success',
-      data: { rows: [], pagination: { total: 0, limit: 10, offset: 0 }, total: 0 },
+      data: { rows: [], pagination: { total: 0, limit: 50, offset: 0 }, total: 0 },
     });
 
     const markup = await renderUsersPage({ search: 'nobody' });
@@ -249,12 +250,21 @@ function successState(): UsersListState {
           avatar: 'https://cdn.example.com/ada.png',
           email: 'ada@example.com',
           status: 'active',
+          roles: [
+            {
+              id: 'role-1',
+              key: 'admin',
+              displayName: 'Administrator',
+              status: 'active',
+              isSystem: true,
+            },
+          ],
           roleSummary: 'admin',
           createdAt: '2026-01-02T03:04:05.000Z',
           updatedAt: '2026-02-03T04:05:06.000Z',
         },
       ],
-      pagination: { total: 1, limit: 10, offset: 0 },
+      pagination: { total: 1, limit: 50, offset: 0 },
       total: 1,
     },
   };

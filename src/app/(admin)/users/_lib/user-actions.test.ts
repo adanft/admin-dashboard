@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createUserAction, deleteUserAction, updateUserAction } from './user-actions';
+import {
+  createUserAction,
+  deleteUserAction,
+  updateUserAction,
+  updateUserRolesAction,
+} from './user-actions';
 
 const mocks = vi.hoisted(() => {
   class MockAdminApiError extends Error {
@@ -20,8 +25,10 @@ const mocks = vi.hoisted(() => {
     }),
     revalidatePath: vi.fn(),
     usersApi: {
+      assignRoles: vi.fn(),
       createUser: vi.fn(),
       deleteUser: vi.fn(),
+      removeRoles: vi.fn(),
       updateUser: vi.fn(),
     },
   };
@@ -218,6 +225,21 @@ describe('users Server Actions', () => {
     expect(mocks.revalidatePath).toHaveBeenCalledWith('/users');
     expect(mocks.revalidatePath).toHaveBeenCalledWith('/users/user-3');
   });
+
+  it('syncs user roles without redirecting away from the roles page', async () => {
+    mocks.usersApi.assignRoles.mockResolvedValue(undefined);
+    mocks.usersApi.removeRoles.mockResolvedValue(undefined);
+
+    await expect(
+      updateUserRolesAction({ status: 'idle' }, createUserRolesFormData()),
+    ).resolves.toEqual({ status: 'success', message: 'User roles updated.' });
+
+    expect(mocks.usersApi.assignRoles).toHaveBeenCalledWith('user-4', ['role-3'], 'access-token');
+    expect(mocks.usersApi.removeRoles).toHaveBeenCalledWith('user-4', ['role-1'], 'access-token');
+    expect(mocks.revalidatePath).toHaveBeenCalledWith('/users');
+    expect(mocks.revalidatePath).toHaveBeenCalledWith('/users/user-4');
+    expect(mocks.revalidatePath).toHaveBeenCalledWith('/users/user-4/roles');
+  });
 });
 
 function createCreateUserFormData(overrides: Record<string, string> = {}) {
@@ -241,6 +263,16 @@ function createUpdateUserFormData(overrides: Record<string, string> = {}) {
     email: 'grace@example.com',
     ...overrides,
   });
+}
+
+function createUserRolesFormData() {
+  const formData = new FormData();
+  formData.set('userId', 'user-4');
+  formData.append('currentRoleIds', 'role-1');
+  formData.append('currentRoleIds', 'role-2');
+  formData.append('roleIds', 'role-2');
+  formData.append('roleIds', 'role-3');
+  return formData;
 }
 
 function createFormData(values: Record<string, string>) {

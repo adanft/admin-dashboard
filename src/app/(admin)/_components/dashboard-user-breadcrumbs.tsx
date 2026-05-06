@@ -4,7 +4,7 @@ import { Fragment } from 'react';
 
 type DashboardUserBreadcrumbsProps =
   | {
-      currentPage: 'Edit';
+      currentPage: 'Edit' | 'Roles';
       userHref: string;
       userLabel: string;
     }
