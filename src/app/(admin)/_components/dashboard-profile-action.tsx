@@ -1,7 +1,7 @@
 'use client';
 
 import Profile from '@adanft/ui/profile';
-import { startTransition } from 'react';
+import { type ComponentProps, type ComponentType, startTransition } from 'react';
 
 import type { AdminSessionUser } from '@/lib/auth/session-cookie';
 import { logoutAction } from '../_lib/logout-action';
@@ -10,12 +10,18 @@ type DashboardProfileActionProps = {
   user: AdminSessionUser;
 };
 
+type DashboardProfileProps = ComponentProps<typeof Profile> & {
+  avatarSize?: 'sm';
+};
+
+const DashboardProfile = Profile as ComponentType<DashboardProfileProps>;
+
 export default function DashboardProfileAction({ user }: DashboardProfileActionProps) {
   const displayName = `${user.name} ${user.lastName}`;
   const initials = getProfileInitials(displayName);
 
   return (
-    <Profile
+    <DashboardProfile
       actionLabel="Logout"
       {...(user.avatar
         ? {
