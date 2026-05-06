@@ -20,10 +20,16 @@ type AuthenticatedGetOptions = {
 };
 
 type AuthenticatedJsonOptions<TPayload> = {
-  method: 'POST' | 'PUT';
+  method: 'DELETE' | 'PATCH' | 'POST' | 'PUT';
   path: string;
   token: string;
   payload: TPayload;
+};
+
+type AuthenticatedEmptyMutationOptions = {
+  method: 'DELETE' | 'POST';
+  path: string;
+  token: string;
 };
 
 type AuthenticatedDeleteOptions = {
@@ -62,6 +68,10 @@ async function requestJson<TPayload, TData>({ path, payload }: RequestOptions<TP
     cache: 'no-store',
   });
 
+  if (response.status === 204) {
+    return undefined as TData;
+  }
+
   const envelope = await parseEnvelope<TData>(response);
 
   if (!response.ok || !envelope.success) {
@@ -88,6 +98,10 @@ export async function requestAuthenticatedGet<TData>({
     },
     cache: 'no-store',
   });
+
+  if (response.status === 204) {
+    return undefined as TData;
+  }
 
   const envelope = await parseEnvelope<TData>(response);
 
@@ -119,6 +133,10 @@ export async function requestAuthenticatedJson<TPayload, TData>({
     cache: 'no-store',
   });
 
+  if (response.status === 204) {
+    return undefined as TData;
+  }
+
   const envelope = await parseEnvelope<TData>(response);
 
   if (!response.ok || !envelope.success) {
@@ -133,8 +151,20 @@ export async function requestAuthenticatedJson<TPayload, TData>({
 }
 
 export async function requestAuthenticatedDelete({ path, token }: AuthenticatedDeleteOptions) {
+  return requestAuthenticatedEmptyMutation({ method: 'DELETE', path, token });
+}
+
+export async function requestAuthenticatedEmptyPost({ path, token }: AuthenticatedDeleteOptions) {
+  return requestAuthenticatedEmptyMutation({ method: 'POST', path, token });
+}
+
+async function requestAuthenticatedEmptyMutation({
+  method,
+  path,
+  token,
+}: AuthenticatedEmptyMutationOptions) {
   const response = await fetch(`${getAdminApiBaseUrl()}${path}`, {
-    method: 'DELETE',
+    method,
     headers: {
       Accept: 'application/json',
       Authorization: `Bearer ${token}`,

@@ -1,23 +1,30 @@
-'use client';
-
 import Breadcrumbs from '@adanft/ui/breadcrumbs';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { Fragment } from 'react';
 
-import { getDashboardBreadcrumbs } from '../_lib/dashboard-breadcrumbs';
+type DashboardRoleBreadcrumbsProps =
+  | {
+      currentPage: 'Edit' | 'Permissions';
+      roleHref: string;
+      roleLabel: string;
+    }
+  | {
+      currentPage?: never;
+      roleHref?: never;
+      roleLabel: string;
+    };
 
-export default function DashboardBreadcrumbs() {
-  const pathname = usePathname();
-  const breadcrumbs = getDashboardBreadcrumbs(pathname);
-
-  if (
-    pathname === '/' ||
-    (pathname !== '/users/new' && pathname.match(/^\/users\/[^/]+/)) ||
-    (pathname !== '/roles/new' && pathname.match(/^\/roles\/[^/]+/))
-  ) {
-    return null;
-  }
+export default function DashboardRoleBreadcrumbs({
+  currentPage,
+  roleHref,
+  roleLabel,
+}: DashboardRoleBreadcrumbsProps) {
+  const breadcrumbs = [
+    { href: '/', label: 'Dashboard' },
+    { href: '/roles', label: 'Roles' },
+    { href: currentPage ? roleHref : undefined, label: roleLabel },
+    ...(currentPage ? [{ label: currentPage }] : []),
+  ];
 
   return (
     <div className="px-6 pt-6">

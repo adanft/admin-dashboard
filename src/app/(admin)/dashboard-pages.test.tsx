@@ -6,14 +6,12 @@ import AccountSessionsPage from './account/sessions/page';
 import AuditLogsPage from './audit-logs/page';
 import DashboardPage from './page';
 import PermissionsPage from './permissions/page';
-import RolesPage from './roles/page';
 import SystemStatusPage from './system/status/page';
 
 const pages = [
   { title: 'Dashboard', Page: DashboardPage },
   { title: 'My Account', Page: AccountPage },
   { title: 'My sessions', Page: AccountSessionsPage },
-  { title: 'Roles', Page: RolesPage },
   { title: 'Permissions', Page: PermissionsPage },
   { title: 'Audit Logs', Page: AuditLogsPage },
   { title: 'System Status', Page: SystemStatusPage },

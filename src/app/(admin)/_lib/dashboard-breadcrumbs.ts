@@ -17,6 +17,10 @@ const userRouteBreadcrumbs = {
   new: 'New User',
 } as const;
 
+const roleRouteBreadcrumbs = {
+  new: 'New Role',
+} as const;
+
 export function getDashboardBreadcrumbs(pathname: string): DashboardBreadcrumb[] {
   if (pathname === '/') {
     return [{ label: dashboardBreadcrumb.label }];
@@ -37,6 +41,14 @@ export function getDashboardBreadcrumbs(pathname: string): DashboardBreadcrumb[]
       dashboardBreadcrumb,
       { href: '/users', label: 'Users' },
       { label: userRouteBreadcrumbs.new },
+    ];
+  }
+
+  if (pathname === '/roles/new') {
+    return [
+      dashboardBreadcrumb,
+      { href: '/roles', label: 'Roles' },
+      { label: roleRouteBreadcrumbs.new },
     ];
   }
 
