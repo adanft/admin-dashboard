@@ -1,24 +1,30 @@
-'use client';
-
 import Breadcrumbs from '@adanft/ui/breadcrumbs';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { Fragment } from 'react';
 
-import { getDashboardBreadcrumbs } from '../_lib/dashboard-breadcrumbs';
+type DashboardPermissionBreadcrumbsProps =
+  | {
+      currentPage: 'Edit';
+      permissionHref: string;
+      permissionLabel: string;
+    }
+  | {
+      currentPage?: never;
+      permissionHref?: never;
+      permissionLabel: string;
+    };
 
-export default function DashboardBreadcrumbs() {
-  const pathname = usePathname();
-  const breadcrumbs = getDashboardBreadcrumbs(pathname);
-
-  if (
-    pathname === '/' ||
-    (pathname !== '/users/new' && pathname.match(/^\/users\/[^/]+/)) ||
-    (pathname !== '/roles/new' && pathname.match(/^\/roles\/[^/]+/)) ||
-    pathname.match(/^\/permissions\/[^/]+/)
-  ) {
-    return null;
-  }
+export default function DashboardPermissionBreadcrumbs({
+  currentPage,
+  permissionHref,
+  permissionLabel,
+}: DashboardPermissionBreadcrumbsProps) {
+  const breadcrumbs = [
+    { href: '/', label: 'Dashboard' },
+    { href: '/permissions', label: 'Permissions' },
+    { href: currentPage ? permissionHref : undefined, label: permissionLabel },
+    ...(currentPage ? [{ label: currentPage }] : []),
+  ];
 
   return (
     <div className="px-6 pt-6">

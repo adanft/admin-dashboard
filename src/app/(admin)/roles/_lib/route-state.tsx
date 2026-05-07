@@ -41,7 +41,7 @@ export async function loadRoleRouteState(id: string): Promise<RoleRouteState> {
     const role = await rolesApi.getRole(id, session.accessToken);
     const [assignedResult, availableResult] = await Promise.allSettled([
       rolesApi.listRolePermissions(id, session.accessToken),
-      permissionsApi.listPermissions(session.accessToken, { limit: 100, offset: 0 }),
+      permissionsApi.listPermissionsData(session.accessToken, { limit: 100, offset: 0 }),
     ]);
 
     const assignedPermissions = assignedResult.status === 'fulfilled' ? assignedResult.value : [];
