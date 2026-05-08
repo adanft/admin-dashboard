@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import AccountPage from './account/page';
 import AccountSessionsPage from './account/sessions/page';
@@ -7,6 +7,10 @@ import AuditLogsPage from './audit-logs/page';
 import DashboardPage from './page';
 import PermissionsPage from './permissions/page';
 import SystemStatusPage from './system/status/page';
+
+vi.mock('@/lib/auth/session', () => ({
+  getSession: vi.fn().mockResolvedValue(null),
+}));
 
 const pages = [
   { title: 'Dashboard', Page: DashboardPage },
@@ -20,8 +24,8 @@ const pages = [
 describe('dashboard placeholder pages', () => {
   it.each(pages)(
     'renders the $title title without adding a nested main landmark',
-    ({ Page, title }) => {
-      const markup = renderToStaticMarkup(<Page />);
+    async ({ Page, title }) => {
+      const markup = renderToStaticMarkup(await Page());
 
       expect(markup).toContain(title);
       expect(markup.match(/<main\b/g)).toBeNull();
