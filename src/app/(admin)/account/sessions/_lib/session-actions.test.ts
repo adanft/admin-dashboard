@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { revokeSessionAction } from './session-actions';
 
 const mocks = vi.hoisted(() => ({
+  clearRefreshCookie: vi.fn(),
   clearSession: vi.fn(),
   cookies: vi.fn(() => ({
     get: vi.fn(() => ({ value: 'refresh-token' })),
@@ -22,6 +23,7 @@ vi.mock('@/lib/api/auth', () => ({
 }));
 
 vi.mock('@/lib/auth/session', () => ({
+  clearRefreshCookie: mocks.clearRefreshCookie,
   clearSession: mocks.clearSession,
   getSession: mocks.getSession,
 }));
@@ -60,9 +62,10 @@ describe('revokeSessionAction', () => {
     expect(mocks.revokeSession).toHaveBeenCalledWith('session-1', 'access-token', 'refresh-token');
     expect(mocks.revalidatePath).toHaveBeenCalledWith('/account/sessions');
     expect(mocks.clearSession).not.toHaveBeenCalled();
+    expect(mocks.clearRefreshCookie).not.toHaveBeenCalled();
   });
 
-  it('clears the local session and redirects after revoking the current session', async () => {
+  it('clears local auth cookies and redirects after revoking the current session', async () => {
     mocks.getSession.mockResolvedValueOnce({ accessToken: 'access-token' });
     const formData = new FormData();
     formData.set('sessionId', 'session-1');
@@ -72,10 +75,11 @@ describe('revokeSessionAction', () => {
 
     expect(mocks.revokeSession).toHaveBeenCalledWith('session-1', 'access-token', 'refresh-token');
     expect(mocks.clearSession).toHaveBeenCalled();
+    expect(mocks.clearRefreshCookie).toHaveBeenCalled();
     expect(mocks.redirect).toHaveBeenCalledWith('/auth/sign-in');
   });
 
-  it('clears the local session and redirects when no access token remains', async () => {
+  it('clears local auth cookies and redirects when no access token remains', async () => {
     mocks.getSession.mockResolvedValueOnce(null);
     const formData = new FormData();
     formData.set('sessionId', 'session-1');
@@ -84,6 +88,7 @@ describe('revokeSessionAction', () => {
 
     expect(mocks.revokeSession).not.toHaveBeenCalled();
     expect(mocks.clearSession).toHaveBeenCalled();
+    expect(mocks.clearRefreshCookie).toHaveBeenCalled();
   });
 
   it('returns an error when revoke fails', async () => {
@@ -94,5 +99,7 @@ describe('revokeSessionAction', () => {
 
     await expect(revokeSessionAction(formData)).resolves.toBeUndefined();
     expect(mocks.revalidatePath).not.toHaveBeenCalled();
+    expect(mocks.clearSession).not.toHaveBeenCalled();
+    expect(mocks.clearRefreshCookie).not.toHaveBeenCalled();
   });
 });

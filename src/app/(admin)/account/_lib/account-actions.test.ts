@@ -4,6 +4,7 @@ import { changePasswordAction, logoutAllSessionsAction } from './account-actions
 
 const mocks = vi.hoisted(() => ({
   changePassword: vi.fn(),
+  clearRefreshCookie: vi.fn(),
   clearSession: vi.fn(),
   cookies: vi.fn(() => ({
     get: vi.fn(() => ({ value: 'refresh-token' })),
@@ -33,6 +34,7 @@ vi.mock('@/lib/api/auth', () => ({
 }));
 
 vi.mock('@/lib/auth/session', () => ({
+  clearRefreshCookie: mocks.clearRefreshCookie,
   clearSession: mocks.clearSession,
   getSession: mocks.getSession,
 }));
@@ -125,26 +127,28 @@ describe('changePasswordAction', () => {
 });
 
 describe('logoutAllSessionsAction', () => {
-  it('revokes all refresh sessions, clears the local session, and redirects to sign in', async () => {
+  it('revokes all refresh sessions, clears local auth cookies, and redirects to sign in', async () => {
     mocks.getSession.mockResolvedValueOnce({ accessToken: 'access-token' });
 
     await expect(logoutAllSessionsAction({})).rejects.toThrow('NEXT_REDIRECT:/auth/sign-in');
 
     expect(mocks.logoutAll).toHaveBeenCalledWith('access-token', 'refresh-token');
     expect(mocks.clearSession).toHaveBeenCalled();
+    expect(mocks.clearRefreshCookie).toHaveBeenCalled();
     expect(mocks.redirect).toHaveBeenCalledWith('/auth/sign-in');
   });
 
-  it('clears the local session and redirects when no access token remains', async () => {
+  it('clears local auth cookies and redirects when no access token remains', async () => {
     mocks.getSession.mockResolvedValueOnce(null);
 
     await expect(logoutAllSessionsAction({})).rejects.toThrow('NEXT_REDIRECT:/auth/sign-in');
 
     expect(mocks.logoutAll).not.toHaveBeenCalled();
     expect(mocks.clearSession).toHaveBeenCalled();
+    expect(mocks.clearRefreshCookie).toHaveBeenCalled();
   });
 
-  it('returns an error without clearing the local session when logout-all fails', async () => {
+  it('returns an error without clearing local auth cookies when logout-all fails', async () => {
     mocks.getSession.mockResolvedValueOnce({ accessToken: 'access-token' });
     mocks.logoutAll.mockRejectedValueOnce(new Error('backend unavailable'));
 
@@ -152,5 +156,7 @@ describe('logoutAllSessionsAction', () => {
       status: 'error',
       message: 'Unable to log out all sessions right now. Try again later.',
     });
+    expect(mocks.clearSession).not.toHaveBeenCalled();
+    expect(mocks.clearRefreshCookie).not.toHaveBeenCalled();
   });
 });

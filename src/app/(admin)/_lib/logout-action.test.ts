@@ -4,6 +4,7 @@ import { logoutAction } from './logout-action';
 
 const mocks = vi.hoisted(() => ({
   authLogout: vi.fn(),
+  clearRefreshCookie: vi.fn(),
   clearSession: vi.fn(),
   cookies: vi.fn(() => ({
     get: vi.fn(() => ({ value: 'refresh-token' })),
@@ -20,6 +21,7 @@ vi.mock('@/lib/api/client', () => ({
 }));
 
 vi.mock('@/lib/auth/session', () => ({
+  clearRefreshCookie: mocks.clearRefreshCookie,
   clearSession: mocks.clearSession,
 }));
 
@@ -32,20 +34,22 @@ vi.mock('next/navigation', () => ({
 }));
 
 describe('logoutAction', () => {
-  it('logs out the backend refresh session, clears the admin session, and redirects to sign in', async () => {
+  it('logs out the backend refresh session, clears local auth cookies, and redirects to sign in', async () => {
     await expect(logoutAction()).rejects.toThrow('NEXT_REDIRECT:/auth/sign-in');
 
     expect(mocks.authLogout).toHaveBeenCalledWith({ refreshToken: 'refresh-token' });
     expect(mocks.clearSession).toHaveBeenCalled();
+    expect(mocks.clearRefreshCookie).toHaveBeenCalled();
     expect(mocks.redirect).toHaveBeenCalledWith('/auth/sign-in');
   });
 
-  it('still clears the admin session and redirects when backend logout fails', async () => {
+  it('still clears local auth cookies and redirects when backend logout fails', async () => {
     mocks.authLogout.mockRejectedValueOnce(new Error('backend unavailable'));
 
     await expect(logoutAction()).rejects.toThrow('NEXT_REDIRECT:/auth/sign-in');
 
     expect(mocks.clearSession).toHaveBeenCalled();
+    expect(mocks.clearRefreshCookie).toHaveBeenCalled();
     expect(mocks.redirect).toHaveBeenCalledWith('/auth/sign-in');
   });
 });

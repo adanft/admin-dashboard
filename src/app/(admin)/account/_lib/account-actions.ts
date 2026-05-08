@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { ChangePasswordPayload } from '@/lib/api/auth';
 import { authApi, isAdminApiError } from '@/lib/api/auth';
-import { clearSession, getSession } from '@/lib/auth/session';
+import { clearRefreshCookie, clearSession, getSession } from '@/lib/auth/session';
 
 type ChangePasswordField = keyof ChangePasswordPayload;
 
@@ -57,6 +57,7 @@ export async function logoutAllSessionsAction(
 
   if (!session?.accessToken) {
     await clearSession();
+    await clearRefreshCookie();
     redirect('/auth/sign-in');
   }
 
@@ -70,6 +71,7 @@ export async function logoutAllSessionsAction(
   }
 
   await clearSession();
+  await clearRefreshCookie();
   redirect('/auth/sign-in');
 }
 

@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { authApi } from '@/lib/api/auth';
-import { clearSession, getSession } from '@/lib/auth/session';
+import { clearRefreshCookie, clearSession, getSession } from '@/lib/auth/session';
 
 export async function revokeSessionAction(formData: FormData): Promise<void> {
   const sessionId = readRequiredText(formData, 'sessionId');
@@ -18,6 +18,7 @@ export async function revokeSessionAction(formData: FormData): Promise<void> {
 
   if (!session?.accessToken) {
     await clearSession();
+    await clearRefreshCookie();
     redirect('/auth/sign-in');
   }
 
@@ -33,6 +34,7 @@ export async function revokeSessionAction(formData: FormData): Promise<void> {
 
   if (readRequiredText(formData, 'isCurrent') === 'true') {
     await clearSession();
+    await clearRefreshCookie();
     redirect('/auth/sign-in');
   }
 
