@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Fragment } from 'react';
 
-import { getDashboardBreadcrumbs } from '../_lib/dashboard-breadcrumbs';
+import { getDashboardBreadcrumbs } from '../_shell/dashboard-breadcrumbs';
 
 export default function DashboardBreadcrumbs() {
   const pathname = usePathname();
