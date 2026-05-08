@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 
 import { authApi } from '@/lib/api/client';
 import { getSignUpErrorMessage } from '@/lib/auth/error-mapping';
-import { setSessionFromAuthData } from '@/lib/auth/session';
+import { persistRefreshCookie, setSessionFromAuthData } from '@/lib/auth/session';
 import type { AuthActionState, RegisterPayload } from '@/lib/auth/types';
 
 export async function signUpAction(
@@ -28,8 +28,10 @@ export async function signUpAction(
 
 async function register(payload: RegisterPayload) {
   try {
-    const data = await authApi.register(payload);
+    const { data, refreshCookie } = await authApi.register(payload);
     const sessionWasSet = await setSessionFromAuthData(data);
+
+    await persistRefreshCookie(refreshCookie);
 
     return { success: true, redirectTo: sessionWasSet ? '/' : '/auth/sign-in' } as const;
   } catch (error) {

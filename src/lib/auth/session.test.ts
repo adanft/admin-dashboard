@@ -1,6 +1,14 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { createSessionFromAuthData } from './session';
+import { createSessionFromAuthData, persistRefreshCookie } from './session';
+
+const mocks = vi.hoisted(() => ({
+  cookieSet: vi.fn(),
+}));
+
+vi.mock('next/headers', () => ({
+  cookies: vi.fn(async () => ({ set: mocks.cookieSet })),
+}));
 
 describe('createSessionFromAuthData', () => {
   afterEach(() => {
@@ -123,6 +131,42 @@ describe('createSessionFromAuthData', () => {
     ).toEqual({
       accessToken: 'not-a-jwt',
       expiresAt: Date.parse('2026-05-02T01:00:00.000Z'),
+    });
+  });
+});
+
+describe('persistRefreshCookie', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('sets a safe httpOnly refresh cookie for dashboard SSR', async () => {
+    await persistRefreshCookie({ maxAge: 604_800, value: 'refresh-token' });
+
+    expect(mocks.cookieSet).toHaveBeenCalledWith({
+      name: 'refresh_token',
+      value: 'refresh-token',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV !== 'development',
+      path: '/',
+      maxAge: 604_800,
+    });
+  });
+
+  it('preserves a parseable backend refresh cookie expiry', async () => {
+    const expires = new Date('2026-05-09T10:00:00.000Z');
+
+    await persistRefreshCookie({ expires, value: 'refresh-token' });
+
+    expect(mocks.cookieSet).toHaveBeenCalledWith({
+      name: 'refresh_token',
+      value: 'refresh-token',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV !== 'development',
+      path: '/',
+      expires,
     });
   });
 });

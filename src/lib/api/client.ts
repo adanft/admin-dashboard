@@ -15,6 +15,7 @@ type RequestOptions<TPayload> = {
 
 type AuthenticatedGetOptions = {
   path: string;
+  refreshToken?: string;
   token: string;
   query?: Record<string, string | number | boolean | null | undefined>;
 };
@@ -29,11 +30,13 @@ type AuthenticatedJsonOptions<TPayload> = {
 type AuthenticatedEmptyMutationOptions = {
   method: 'DELETE' | 'POST';
   path: string;
+  refreshToken?: string;
   token: string;
 };
 
 type AuthenticatedDeleteOptions = {
   path: string;
+  refreshToken?: string;
   token: string;
 };
 
@@ -52,6 +55,17 @@ type ParsedEnvelopeBody<TData> = Partial<BackendEnvelope<TData>> & {
   error?: string;
 };
 
+export type BackendRefreshCookie = {
+  expires?: Date;
+  maxAge?: number;
+  value: string;
+};
+
+type AuthApiResponse<TData> = {
+  data: TData;
+  refreshCookie?: BackendRefreshCookie;
+};
+
 export class AdminApiError extends Error {
   readonly code?: string;
   readonly status: number;
@@ -63,7 +77,10 @@ export class AdminApiError extends Error {
   }
 }
 
-async function requestJson<TPayload, TData>({ path, payload }: RequestOptions<TPayload>) {
+async function requestAuthJson<TPayload, TData>({
+  path,
+  payload,
+}: RequestOptions<TPayload>): Promise<AuthApiResponse<TData>> {
   const response = await fetch(`${getAdminApiBaseUrl()}${path}`, {
     method: 'POST',
     headers: {
@@ -75,7 +92,7 @@ async function requestJson<TPayload, TData>({ path, payload }: RequestOptions<TP
   });
 
   if (response.status === 204) {
-    return undefined as TData;
+    return { data: undefined as TData };
   }
 
   const envelope = await parseEnvelope<TData>(response);
@@ -88,20 +105,32 @@ async function requestJson<TPayload, TData>({ path, payload }: RequestOptions<TP
     });
   }
 
-  return envelope.data;
+  const refreshCookie = readRefreshCookie(response.headers);
+
+  return {
+    data: envelope.data,
+    ...(refreshCookie ? { refreshCookie } : {}),
+  };
 }
 
 export async function requestAuthenticatedGet<TData>({
   path,
   query,
+  refreshToken,
   token,
 }: AuthenticatedGetOptions) {
+  const headers: HeadersInit = {
+    Accept: 'application/json',
+    Authorization: `Bearer ${token}`,
+  };
+
+  if (refreshToken) {
+    headers.Cookie = `refresh_token=${refreshToken}`;
+  }
+
   const response = await fetch(`${getAdminApiBaseUrl()}${path}${serializeQuery(query)}`, {
     method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+    headers,
     cache: 'no-store',
   });
 
@@ -156,8 +185,12 @@ export async function requestAuthenticatedJson<TPayload, TData>({
   return envelope.data;
 }
 
-export async function requestAuthenticatedDelete({ path, token }: AuthenticatedDeleteOptions) {
-  return requestAuthenticatedEmptyMutation({ method: 'DELETE', path, token });
+export async function requestAuthenticatedDelete({
+  path,
+  refreshToken,
+  token,
+}: AuthenticatedDeleteOptions) {
+  return requestAuthenticatedEmptyMutation({ method: 'DELETE', path, refreshToken, token });
 }
 
 export async function requestAuthenticatedEmptyPost({ path, token }: AuthenticatedDeleteOptions) {
@@ -202,14 +235,21 @@ export async function requestAuthenticatedCookiePost({
 async function requestAuthenticatedEmptyMutation({
   method,
   path,
+  refreshToken,
   token,
 }: AuthenticatedEmptyMutationOptions) {
+  const headers: HeadersInit = {
+    Accept: 'application/json',
+    Authorization: `Bearer ${token}`,
+  };
+
+  if (refreshToken) {
+    headers.Cookie = `refresh_token=${refreshToken}`;
+  }
+
   const response = await fetch(`${getAdminApiBaseUrl()}${path}`, {
     method,
-    headers: {
-      Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+    headers,
     cache: 'no-store',
   });
 
@@ -310,15 +350,82 @@ async function parseEnvelope<TData>(response: Response): Promise<BackendEnvelope
   };
 }
 
+function readRefreshCookie(headers: Headers): BackendRefreshCookie | null {
+  for (const setCookie of getSetCookieHeaders(headers)) {
+    const refreshCookie = parseRefreshCookie(setCookie);
+
+    if (refreshCookie) {
+      return refreshCookie;
+    }
+  }
+
+  return null;
+}
+
+function getSetCookieHeaders(headers: Headers) {
+  const headersWithSetCookie = headers as Headers & { getSetCookie?: () => string[] };
+  const setCookieHeaders = headersWithSetCookie.getSetCookie?.();
+
+  if (setCookieHeaders?.length) {
+    return setCookieHeaders;
+  }
+
+  const setCookie = headers.get('set-cookie');
+  return setCookie ? [setCookie] : [];
+}
+
+function parseRefreshCookie(setCookie: string): BackendRefreshCookie | null {
+  const refreshCookieStart = setCookie.match(/(?:^|,\s*)refresh_token=/)?.index;
+
+  if (refreshCookieStart === undefined) {
+    return null;
+  }
+
+  const cookie = setCookie.slice(refreshCookieStart).replace(/^,\s*/, '');
+  const [nameValue, ...attributes] = cookie.split(';');
+  const value = nameValue?.slice('refresh_token='.length).trim();
+
+  if (!value) {
+    return null;
+  }
+
+  const maxAge = readCookieMaxAge(attributes);
+  const expires = readCookieExpires(attributes);
+
+  return {
+    value,
+    ...(maxAge !== null ? { maxAge } : {}),
+    ...(expires ? { expires } : {}),
+  };
+}
+
+function readCookieMaxAge(attributes: string[]) {
+  const maxAgeAttribute = attributes.find((attribute) =>
+    attribute.trim().toLowerCase().startsWith('max-age='),
+  );
+  const maxAge = Number(maxAgeAttribute?.split('=')[1]);
+
+  return Number.isFinite(maxAge) ? maxAge : null;
+}
+
+function readCookieExpires(attributes: string[]) {
+  const expiresAttribute = attributes.find((attribute) =>
+    attribute.trim().toLowerCase().startsWith('expires='),
+  );
+  const expires = Date.parse(expiresAttribute?.split('=').slice(1).join('=') ?? '');
+
+  return Number.isNaN(expires) ? null : new Date(expires);
+}
+
 export const authApi = {
   login(payload: LoginPayload) {
-    return requestJson<LoginPayload, AuthSessionData>({ path: '/auth/login', payload });
+    return requestAuthJson<LoginPayload, AuthSessionData>({ path: '/auth/login', payload });
   },
   logout(options: LogoutOptions = {}) {
     return requestCookiePost({ path: '/auth/logout', refreshToken: options.refreshToken });
   },
   register(payload: RegisterPayload) {
-    return requestJson<RegisterPayload, AuthSessionData>({ path: '/auth/register', payload });
+    return requestAuthJson<RegisterPayload, AuthSessionData>({ path: '/auth/register', payload });
   },
 };
 

@@ -72,7 +72,7 @@ describe('AccountPage', () => {
     expect(markup).not.toContain('users.read');
     expect(markup).not.toContain('roles.read');
     expect(markup).toContain('href="/account/sessions"');
-    expect(markup).toContain('Manage my sessions');
+    expect(markup).toContain('Sessions');
     expect(getCurrentAccountMock).toHaveBeenCalledWith('access-token');
   });
 

@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 
 import { authApi, isAdminApiError } from '@/lib/api/client';
-import { clearSession, setSessionFromAuthData } from '@/lib/auth/session';
+import { clearSession, persistRefreshCookie, setSessionFromAuthData } from '@/lib/auth/session';
 import type { AuthActionState, LoginPayload } from '@/lib/auth/types';
 
 const INVALID_SIGN_IN_MESSAGE = 'Invalid username or password.';
@@ -29,7 +29,7 @@ export async function signInAction(
 
 async function login(payload: LoginPayload) {
   try {
-    const data = await authApi.login(payload);
+    const { data, refreshCookie } = await authApi.login(payload);
 
     if (data.requiredAction === 'change_password') {
       await clearSession();
@@ -45,6 +45,8 @@ async function login(payload: LoginPayload) {
         error: 'We couldn’t sign you in. Please try again.',
       } as const;
     }
+
+    await persistRefreshCookie(refreshCookie);
 
     return { success: true } as const;
   } catch (error) {

@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => {
     redirect: vi.fn((path: string) => {
       throw new Error(`NEXT_REDIRECT:${path}`);
     }),
+    persistRefreshCookie: vi.fn(),
     setSessionFromAuthData: vi.fn(),
   };
 });
@@ -32,6 +33,7 @@ vi.mock('@/lib/api/client', () => ({
 
 vi.mock('@/lib/auth/session', () => ({
   clearSession: mocks.clearSession,
+  persistRefreshCookie: mocks.persistRefreshCookie,
   setSessionFromAuthData: mocks.setSessionFromAuthData,
 }));
 
@@ -46,7 +48,7 @@ describe('sign in action', () => {
 
   it('persists a usable login session and redirects to the dashboard', async () => {
     const sessionData = { accessToken: 'token', expiresIn: 3600 };
-    mocks.authApi.login.mockResolvedValue(sessionData);
+    mocks.authApi.login.mockResolvedValue({ data: sessionData });
     mocks.setSessionFromAuthData.mockResolvedValue(true);
 
     await expect(signInAction({}, createSignInFormData())).rejects.toThrow('NEXT_REDIRECT:/');
@@ -54,6 +56,17 @@ describe('sign in action', () => {
     expect(mocks.authApi.login).toHaveBeenCalledWith({ identity: 'ada', password: 'secret' });
     expect(mocks.setSessionFromAuthData).toHaveBeenCalledWith(sessionData);
     expect(mocks.redirect).toHaveBeenCalledWith('/');
+  });
+
+  it('copies the backend refresh cookie when login provides one', async () => {
+    const sessionData = { accessToken: 'token', expiresIn: 3600 };
+    const refreshCookie = { maxAge: 604_800, value: 'refresh-token' };
+    mocks.authApi.login.mockResolvedValue({ data: sessionData, refreshCookie });
+    mocks.setSessionFromAuthData.mockResolvedValue(true);
+
+    await expect(signInAction({}, createSignInFormData())).rejects.toThrow('NEXT_REDIRECT:/');
+
+    expect(mocks.persistRefreshCookie).toHaveBeenCalledWith(refreshCookie);
   });
 
   it.each([400, 401])(

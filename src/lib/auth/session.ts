@@ -11,6 +11,12 @@ import {
   encodeAdminSession,
 } from './session-cookie';
 
+type RefreshCookie = {
+  expires?: Date;
+  maxAge?: number;
+  value: string;
+};
+
 const DEFAULT_SESSION_TTL_SECONDS = 60 * 60;
 const MS_PER_SECOND = 1000;
 const UNIX_SECONDS_THRESHOLD = 10_000_000_000;
@@ -45,6 +51,25 @@ export async function setSessionFromAuthData(data: AuthSessionData) {
   });
 
   return true;
+}
+
+export async function persistRefreshCookie(refreshCookie?: RefreshCookie) {
+  if (!refreshCookie) {
+    return;
+  }
+
+  const cookieStore = await cookies();
+
+  cookieStore.set({
+    name: 'refresh_token',
+    value: refreshCookie.value,
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV !== 'development',
+    path: '/',
+    ...(refreshCookie.maxAge !== undefined ? { maxAge: refreshCookie.maxAge } : {}),
+    ...(refreshCookie.expires ? { expires: refreshCookie.expires } : {}),
+  });
 }
 
 export async function clearSession() {

@@ -26,8 +26,8 @@ export default async function AccountPage() {
           <h1 className="text-3xl font-bold text-heading">My Account</h1>
           <p className="max-w-prose text-foreground">Review your account details.</p>
         </div>
-        <Button asChild variant="secondary">
-          <Link href="/account/sessions">Manage my sessions</Link>
+        <Button asChild outline variant="theme">
+          <Link href="/account/sessions">Sessions</Link>
         </Button>
       </header>
 

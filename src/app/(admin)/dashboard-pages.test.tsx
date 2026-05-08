@@ -12,10 +12,16 @@ vi.mock('@/lib/auth/session', () => ({
   getSession: vi.fn().mockResolvedValue(null),
 }));
 
+vi.mock('next/headers', () => ({
+  cookies: vi.fn(() => ({
+    get: vi.fn(() => undefined),
+  })),
+}));
+
 const pages = [
   { title: 'Dashboard', Page: DashboardPage },
   { title: 'My Account', Page: AccountPage },
-  { title: 'My sessions', Page: AccountSessionsPage },
+  { title: 'Sessions', Page: AccountSessionsPage },
   { title: 'Permissions', Page: PermissionsPage },
   { title: 'Audit Logs', Page: AuditLogsPage },
   { title: 'System Status', Page: SystemStatusPage },
@@ -32,10 +38,10 @@ describe('dashboard placeholder pages', () => {
     },
   );
 
-  it('links from My Account to account sessions', () => {
-    const markup = renderToStaticMarkup(<AccountPage />);
+  it('links from My Account to account sessions', async () => {
+    const markup = renderToStaticMarkup(await AccountPage());
 
     expect(markup).toContain('href="/account/sessions"');
-    expect(markup).toContain('Manage my sessions');
+    expect(markup).toContain('Sessions');
   });
 });

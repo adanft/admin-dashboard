@@ -29,7 +29,7 @@ describe('authApi', () => {
     );
 
     await expect(authApi.login({ identity: 'ada', password: 'secret' })).resolves.toEqual({
-      accessToken: 'token',
+      data: { accessToken: 'token' },
     });
 
     expect(fetch).toHaveBeenCalledWith('https://admin-api.test/auth/login', {
@@ -40,6 +40,48 @@ describe('authApi', () => {
       },
       body: JSON.stringify({ identity: 'ada', password: 'secret' }),
       cache: 'no-store',
+    });
+  });
+
+  it('returns the backend refresh cookie from successful login responses', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ success: true, data: { accessToken: 'token' }, status: 200 }), {
+        status: 200,
+        headers: {
+          'Set-Cookie':
+            'refresh_token=refresh-value; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800',
+        },
+      }),
+    );
+
+    await expect(authApi.login({ identity: 'ada', password: 'secret' })).resolves.toEqual({
+      data: { accessToken: 'token' },
+      refreshCookie: { maxAge: 604_800, value: 'refresh-value' },
+    });
+  });
+
+  it('returns the backend refresh cookie expiry from successful register responses', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ success: true, data: { accessToken: 'token' }, status: 200 }), {
+        status: 200,
+        headers: {
+          'Set-Cookie':
+            'refresh_token=registered-value; Path=/; HttpOnly; SameSite=Lax; Expires=Sat, 09 May 2026 10:00:00 GMT',
+        },
+      }),
+    );
+
+    await expect(
+      authApi.register({
+        name: 'Ada',
+        lastName: 'Lovelace',
+        username: 'ada',
+        email: 'ada@example.com',
+        password: 'secret',
+      }),
+    ).resolves.toEqual({
+      data: { accessToken: 'token' },
+      refreshCookie: { expires: new Date('2026-05-09T10:00:00.000Z'), value: 'registered-value' },
     });
   });
 
@@ -211,6 +253,30 @@ describe('requestAuthenticatedGet', () => {
       status,
     } satisfies Partial<AdminApiError>);
   });
+
+  it('includes the refresh cookie on authenticated GET requests when provided', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ success: true, data: [], status: 200 }), { status: 200 }),
+    );
+
+    await expect(
+      requestAuthenticatedGet<[]>({
+        path: '/auth/sessions',
+        refreshToken: 'refresh-token',
+        token: 'access-token',
+      }),
+    ).resolves.toEqual([]);
+
+    expect(fetch).toHaveBeenCalledWith('https://admin-api.test/auth/sessions', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer access-token',
+        Cookie: 'refresh_token=refresh-token',
+      },
+      cache: 'no-store',
+    });
+  });
 });
 
 describe('authenticated mutation helpers', () => {
@@ -289,5 +355,27 @@ describe('authenticated mutation helpers', () => {
       message: 'denied',
       status,
     } satisfies Partial<AdminApiError>);
+  });
+
+  it('includes the refresh cookie on authenticated DELETE requests when provided', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 204 }));
+
+    await expect(
+      requestAuthenticatedDelete({
+        path: '/auth/sessions/session-1',
+        refreshToken: 'refresh-token',
+        token: 'access-token',
+      }),
+    ).resolves.toBeUndefined();
+
+    expect(fetch).toHaveBeenCalledWith('https://admin-api.test/auth/sessions/session-1', {
+      method: 'DELETE',
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer access-token',
+        Cookie: 'refresh_token=refresh-token',
+      },
+      cache: 'no-store',
+    });
   });
 });

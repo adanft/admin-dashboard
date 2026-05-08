@@ -4,6 +4,7 @@ import {
   AdminApiError,
   isAdminApiError,
   requestAuthenticatedCookiePost,
+  requestAuthenticatedDelete,
   requestAuthenticatedGet,
   requestAuthenticatedJson,
 } from '@/lib/api/client';
@@ -37,8 +38,20 @@ export type ChangePasswordPayload = {
   newPassword: string;
 };
 
+export type AuthSession = {
+  id: string;
+  familyId: string;
+  createdAt: string;
+  expiresAt: string;
+  isCurrent: boolean;
+};
+
 export type CurrentAccountState =
   | { status: 'success'; data: CurrentAccount }
+  | { status: 'unauthorized' | 'forbidden' | 'error'; message: string };
+
+export type AuthSessionsState =
+  | { status: 'success'; data: AuthSession[] }
   | { status: 'unauthorized' | 'forbidden' | 'error'; message: string };
 
 const USER_STATUSES = ['active', 'disabled', 'locked', 'pending_password_change'] as const;
@@ -52,6 +65,35 @@ export function mapCurrentAccountResponse(response: unknown): CurrentAccount {
     actor,
     roles: mapRoles(body.roles),
   };
+}
+
+export function mapAuthSessionsResponse(response: unknown): AuthSession[] {
+  const sessions = Array.isArray(response)
+    ? response
+    : isRecord(response) && Array.isArray(response.sessions)
+      ? response.sessions
+      : [];
+
+  return sessions.flatMap((session) => {
+    if (!isRecord(session)) return [];
+
+    const id = readString(session.id);
+    const familyId = readString(session.familyId) ?? readString(session.family_id);
+    const createdAt = readString(session.createdAt) ?? readString(session.created_at);
+    const expiresAt = readString(session.expiresAt) ?? readString(session.expires_at);
+
+    if (!id || !familyId || !createdAt || !expiresAt) return [];
+
+    return [
+      {
+        id,
+        familyId,
+        createdAt,
+        expiresAt,
+        isCurrent: readBoolean(session.isCurrent) ?? readBoolean(session.is_current) ?? false,
+      },
+    ];
+  });
 }
 
 export function toCurrentAccountState(
@@ -70,6 +112,22 @@ export function toCurrentAccountState(
   return { status: 'error', message: 'Unable to load your account right now.' };
 }
 
+export function toAuthSessionsState(
+  error: unknown,
+): Exclude<AuthSessionsState, { status: 'success' }> {
+  const status = isAdminApiError(error) ? error.status : 500;
+
+  if (status === 401) {
+    return { status: 'unauthorized', message: 'Your session expired or is invalid.' };
+  }
+
+  if (status === 403) {
+    return { status: 'forbidden', message: 'You do not have permission to view sessions.' };
+  }
+
+  return { status: 'error', message: 'Unable to load your sessions right now.' };
+}
+
 export const authApi = {
   async getCurrentAccount(token: string): Promise<CurrentAccountState> {
     try {
@@ -77,6 +135,18 @@ export const authApi = {
       return { status: 'success', data: mapCurrentAccountResponse(response) };
     } catch (error) {
       return toCurrentAccountState(error);
+    }
+  },
+  async getSessions(token: string, refreshToken?: string): Promise<AuthSessionsState> {
+    try {
+      const response = await requestAuthenticatedGet<unknown>({
+        path: '/auth/sessions',
+        refreshToken,
+        token,
+      });
+      return { status: 'success', data: mapAuthSessionsResponse(response) };
+    } catch (error) {
+      return toAuthSessionsState(error);
     }
   },
   async changePassword(payload: ChangePasswordPayload, token: string): Promise<CurrentActor> {
@@ -91,6 +161,19 @@ export const authApi = {
   },
   logoutAll(token: string, refreshToken?: string): Promise<void> {
     return requestAuthenticatedCookiePost({ path: '/auth/logout-all', refreshToken, token });
+  },
+  async revokeSession(sessionId: string, token: string, refreshToken?: string): Promise<void> {
+    const trimmedSessionId = sessionId.trim();
+
+    if (!trimmedSessionId) {
+      throw new Error('Session id is required.');
+    }
+
+    return await requestAuthenticatedDelete({
+      path: `/auth/sessions/${encodeURIComponent(trimmedSessionId)}`,
+      refreshToken,
+      token,
+    });
   },
 };
 
