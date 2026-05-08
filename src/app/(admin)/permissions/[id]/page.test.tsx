@@ -2,7 +2,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AdminApiError } from '@/lib/api/client';
+import { AdminApiError } from '@/server/api/client';
 import type { PermissionProfile } from '@/server/api/permissions';
 import { getSession } from '@/server/auth/session';
 import PermissionDetailPage from './page';

@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { getAdminApiBaseUrl } from '@/lib/api/config';
+import { getAdminApiBaseUrl } from '@/server/api/config';
 import type {
   AuthSessionData,
   BackendEnvelope,

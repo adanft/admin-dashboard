@@ -13,7 +13,7 @@ const mocks = vi.hoisted(() => ({
   setSessionFromAuthData: vi.fn(),
 }));
 
-vi.mock('@/lib/api/client', () => ({
+vi.mock('@/server/api/client', () => ({
   authApi: mocks.authApi,
 }));
 

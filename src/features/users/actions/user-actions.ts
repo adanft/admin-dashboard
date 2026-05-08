@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-import { isAdminApiError } from '@/lib/api/client';
+import { isAdminApiError } from '@/server/api/client';
 import { type CreateUserPayload, type UserProfilePayload, usersApi } from '@/server/api/users';
 import { getSession } from '@/server/auth/session';
 

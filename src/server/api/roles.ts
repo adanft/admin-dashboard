@@ -6,7 +6,7 @@ import {
   requestAuthenticatedDelete,
   requestAuthenticatedGet,
   requestAuthenticatedJson,
-} from '@/lib/api/client';
+} from '@/server/api/client';
 import { mapPermissionSummary, type PermissionSummary } from '@/server/api/permissions';
 
 export type RoleStatus = 'active' | 'disabled';

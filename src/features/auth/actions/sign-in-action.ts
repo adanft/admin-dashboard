@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 
-import { authApi, isAdminApiError } from '@/lib/api/client';
+import { authApi, isAdminApiError } from '@/server/api/client';
 import {
   clearRefreshCookie,
   clearRequiredPasswordChangeSession,

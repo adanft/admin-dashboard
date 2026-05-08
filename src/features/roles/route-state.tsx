@@ -1,6 +1,6 @@
 import Box from '@adanft/ui/box';
 
-import { isAdminApiError } from '@/lib/api/client';
+import { isAdminApiError } from '@/server/api/client';
 import { type PermissionSummary, permissionsApi } from '@/server/api/permissions';
 import { type RoleProfile, rolesApi } from '@/server/api/roles';
 import { getSession } from '@/server/auth/session';

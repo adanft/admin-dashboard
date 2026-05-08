@@ -6,7 +6,7 @@ import {
   requestAuthenticatedDelete,
   requestAuthenticatedGet,
   requestAuthenticatedJson,
-} from '@/lib/api/client';
+} from '@/server/api/client';
 import type { RoleStatus } from '@/server/api/roles';
 
 export type UserStatus = 'active' | 'disabled' | 'locked' | 'pending_password_change';

@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 
 import { getSignUpErrorMessage } from '@/features/auth/actions/error-mapping';
-import { authApi } from '@/lib/api/client';
+import { authApi } from '@/server/api/client';
 import { persistRefreshCookie, setSessionFromAuthData } from '@/server/auth/session';
 import type { AuthActionState, RegisterPayload } from '@/server/auth/types';
 

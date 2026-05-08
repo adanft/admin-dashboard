@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { isAdminApiError, requestAuthenticatedGet } from '@/lib/api/client';
+import { isAdminApiError, requestAuthenticatedGet } from '@/server/api/client';
 
 export type AuditLogsListLimit = 10 | 25 | 50 | 100;
 

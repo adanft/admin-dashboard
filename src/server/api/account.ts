@@ -7,7 +7,7 @@ import {
   requestAuthenticatedDelete,
   requestAuthenticatedGet,
   requestAuthenticatedJson,
-} from '@/lib/api/client';
+} from '@/server/api/client';
 import type { UserStatus } from '@/server/api/users';
 
 export type AccountRole = {

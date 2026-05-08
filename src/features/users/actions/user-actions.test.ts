@@ -34,7 +34,7 @@ const mocks = vi.hoisted(() => {
   };
 });
 
-vi.mock('@/lib/api/client', () => ({
+vi.mock('@/server/api/client', () => ({
   isAdminApiError: (error: unknown) => error instanceof mocks.MockAdminApiError,
 }));
 

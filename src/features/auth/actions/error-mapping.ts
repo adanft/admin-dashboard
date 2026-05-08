@@ -1,4 +1,4 @@
-import { isAdminApiError } from '@/lib/api/client';
+import { isAdminApiError } from '@/server/api/client';
 
 export const SETUP_CLOSED_MESSAGE = 'Initial setup is no longer available. Please sign in.';
 

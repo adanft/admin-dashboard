@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { AdminApiError } from '@/lib/api/client';
+import { AdminApiError } from '@/server/api/client';
 import { getSignUpErrorMessage, SETUP_CLOSED_MESSAGE } from './error-mapping';
 
 describe('sign-up failures', () => {

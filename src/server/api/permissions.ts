@@ -4,7 +4,7 @@ import {
   isAdminApiError,
   requestAuthenticatedGet,
   requestAuthenticatedJson,
-} from '@/lib/api/client';
+} from '@/server/api/client';
 
 export type PermissionStatus = 'active' | 'disabled';
 export type PermissionsListLimit = 10 | 25 | 50 | 100;
