@@ -25,7 +25,7 @@ vi.mock('@adanft/ui/profile', () => ({
   ),
 }));
 
-vi.mock('../_lib/logout-action', () => ({
+vi.mock('@/features/auth/actions/logout-action', () => ({
   logoutAction: vi.fn(),
 }));
 

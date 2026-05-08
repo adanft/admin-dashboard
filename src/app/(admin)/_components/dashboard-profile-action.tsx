@@ -3,8 +3,8 @@
 import Profile from '@adanft/ui/profile';
 import { startTransition } from 'react';
 
+import { logoutAction } from '@/features/auth/actions/logout-action';
 import type { AdminSessionUser } from '@/server/auth/session-cookie';
-import { logoutAction } from '../_lib/logout-action';
 
 type DashboardProfileActionProps = {
   user: AdminSessionUser;
