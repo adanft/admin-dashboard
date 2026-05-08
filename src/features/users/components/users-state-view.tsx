@@ -1,6 +1,6 @@
 import Box from '@adanft/ui/box';
 
-import type { UsersListState } from '@/lib/api/users';
+import type { UsersListState } from '@/server/api/users';
 import { UsersPaginationFoot, UsersPaginationHead } from './users-pagination';
 import UsersTable from './users-table';
 

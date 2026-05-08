@@ -1,6 +1,7 @@
 // biome-ignore-all lint/nursery/noSecrets: API tests use deterministic fake tokens and URLs.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { AdminApiError } from './client';
+
+import { AdminApiError } from '@/lib/api/client';
 import {
   mapUserProfileResponse,
   mapUsersListResponse,

@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AdminApiError } from '@/lib/api/client';
 import type { RoleSummary, RolesListState } from '@/lib/api/roles';
-import type { UserProfile } from '@/lib/api/users';
+import type { UserProfile } from '@/server/api/users';
 import { getSession } from '@/server/auth/session';
 import UserRolesPage from './page';
 
@@ -23,8 +23,8 @@ vi.mock('@/server/auth/session', () => ({
   getSession: vi.fn(),
 }));
 
-vi.mock('@/lib/api/users', async () => {
-  const actual = await vi.importActual<typeof import('@/lib/api/users')>('@/lib/api/users');
+vi.mock('@/server/api/users', async () => {
+  const actual = await vi.importActual<typeof import('@/server/api/users')>('@/server/api/users');
 
   return {
     ...actual,
@@ -45,7 +45,7 @@ vi.mock('@/lib/api/roles', async () => {
   };
 });
 
-vi.mock('../../_lib/user-actions', () => ({
+vi.mock('@/features/users/actions/user-actions', () => ({
   updateUserRolesAction: vi.fn(),
 }));
 

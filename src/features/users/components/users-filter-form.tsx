@@ -4,7 +4,7 @@ import Field from '@adanft/ui/field';
 import Input from '@adanft/ui/input';
 import Select from '@adanft/ui/select';
 
-import type { UsersListQuery } from '@/lib/api/users';
+import type { UsersListQuery } from '@/server/api/users';
 
 export default function UsersFilterForm({ query }: { query: UsersListQuery }) {
   return (

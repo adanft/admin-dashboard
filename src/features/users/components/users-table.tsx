@@ -5,7 +5,7 @@ import Table, { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Info, Pencil } from 'lucide-react';
 import Link from 'next/link';
 
-import type { UserStatus, UsersList } from '@/lib/api/users';
+import type { UserStatus, UsersList } from '@/server/api/users';
 import UserRowDeleteAction from './user-row-delete-action';
 
 const STATUS_LABELS: Record<UserStatus, string> = {

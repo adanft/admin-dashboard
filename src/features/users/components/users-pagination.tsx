@@ -4,7 +4,7 @@ import PaginationFoot from '@adanft/ui/pagination-foot';
 import PaginationHead from '@adanft/ui/pagination-head';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import type { UsersListPagination } from '@/lib/api/users';
+import type { UsersListPagination } from '@/server/api/users';
 
 const USERS_PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 

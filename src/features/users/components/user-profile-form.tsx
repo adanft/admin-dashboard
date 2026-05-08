@@ -6,8 +6,12 @@ import Input from '@adanft/ui/input';
 import Link from 'next/link';
 import { useActionState } from 'react';
 
-import type { UserProfile } from '@/lib/api/users';
-import { createUserAction, type UserActionState, updateUserAction } from '../_lib/user-actions';
+import {
+  createUserAction,
+  type UserActionState,
+  updateUserAction,
+} from '@/features/users/actions/user-actions';
+import type { UserProfile } from '@/server/api/users';
 
 type UserProfileFormProps =
   | {

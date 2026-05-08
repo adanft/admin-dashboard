@@ -8,10 +8,10 @@ import Label from '@adanft/ui/label';
 import Link from 'next/link';
 import { useActionState } from 'react';
 
+import type { UserActionState } from '@/features/users/actions/user-actions';
+import { updateUserRolesAction } from '@/features/users/actions/user-actions';
 import type { RoleSummary } from '@/lib/api/roles';
-import type { UserRoleSummary } from '@/lib/api/users';
-import type { UserActionState } from '../_lib/user-actions';
-import { updateUserRolesAction } from '../_lib/user-actions';
+import type { UserRoleSummary } from '@/server/api/users';
 
 type RoleOption = Pick<RoleSummary, 'displayName' | 'id' | 'isSystem' | 'key' | 'status'>;
 

@@ -5,7 +5,7 @@ import Modal from '@adanft/ui/modal';
 import { Trash } from 'lucide-react';
 import { startTransition, useActionState, useState } from 'react';
 
-import { deleteUserAction, type UserActionState } from '../_lib/user-actions';
+import { deleteUserAction, type UserActionState } from '@/features/users/actions/user-actions';
 
 type UserRowDeleteActionProps = {
   presentation?: 'icon' | 'text';

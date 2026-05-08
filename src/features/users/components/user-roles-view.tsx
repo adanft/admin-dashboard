@@ -4,7 +4,7 @@ import Button from '@adanft/ui/button';
 import { ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
-import type { UserRoleSummary } from '@/lib/api/users';
+import type { UserRoleSummary } from '@/server/api/users';
 
 type UserRolesViewProps = {
   roles: UserRoleSummary[];

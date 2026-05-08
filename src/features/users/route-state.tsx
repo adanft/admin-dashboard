@@ -2,8 +2,8 @@ import Box from '@adanft/ui/box';
 
 import { isAdminApiError } from '@/lib/api/client';
 import { type RoleSummary, rolesApi } from '@/lib/api/roles';
-import type { UserProfile } from '@/lib/api/users';
-import { usersApi } from '@/lib/api/users';
+import type { UserProfile } from '@/server/api/users';
+import { usersApi } from '@/server/api/users';
 import { getSession } from '@/server/auth/session';
 
 export type UserRouteState =

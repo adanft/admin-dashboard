@@ -8,7 +8,7 @@ import {
   requestAuthenticatedGet,
   requestAuthenticatedJson,
 } from '@/lib/api/client';
-import type { UserStatus } from '@/lib/api/users';
+import type { UserStatus } from '@/server/api/users';
 
 export type AccountRole = {
   id: string;
