@@ -23,7 +23,6 @@ describe('dashboardNavigation', () => {
           ['Audit Logs', '/audit-logs'],
         ],
       },
-      { label: 'Operations', items: [['System Status', '/system/status']] },
     ]);
   });
 
@@ -31,6 +30,7 @@ describe('dashboardNavigation', () => {
     const hrefs = dashboardNavigation.flatMap((section) => section.items.map((item) => item.href));
 
     expect(hrefs).not.toContain('/');
+    expect(hrefs).not.toContain('/system/status');
     expect(hrefs).not.toContain('/auth/sign-in');
     expect(hrefs).not.toContain('/auth/sign-up');
   });

@@ -2,7 +2,6 @@ import {
   IdCard,
   KeyRound,
   type LucideIcon,
-  MonitorCheck,
   ScrollText,
   ShieldCheck,
   UserRound,
@@ -11,7 +10,6 @@ import {
 
 export type DashboardNavigationHref =
   | '/account'
-  | '/system/status'
   | '/users'
   | '/roles'
   | '/permissions'
@@ -24,7 +22,7 @@ export type DashboardNavigationItem = {
 };
 
 export type DashboardNavigationSection = {
-  label: 'Account' | 'Administration' | 'Operations';
+  label: 'Account' | 'Administration';
   icon: LucideIcon;
   items: readonly DashboardNavigationItem[];
 };
@@ -45,11 +43,6 @@ export const dashboardNavigation = [
       { label: 'Permissions', href: '/permissions', icon: KeyRound },
       { label: 'Audit Logs', href: '/audit-logs', icon: ScrollText },
     ],
-  },
-  {
-    label: 'Operations',
-    icon: MonitorCheck,
-    items: [{ label: 'System Status', href: '/system/status', icon: MonitorCheck }],
   },
 ] as const satisfies readonly DashboardNavigationSection[];
 

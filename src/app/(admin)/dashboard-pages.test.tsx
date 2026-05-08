@@ -6,7 +6,6 @@ import AccountSessionsPage from './account/sessions/page';
 import AuditLogsPage from './audit-logs/page';
 import DashboardPage from './page';
 import PermissionsPage from './permissions/page';
-import SystemStatusPage from './system/status/page';
 
 vi.mock('@/lib/auth/session', () => ({
   getSession: vi.fn().mockResolvedValue(null),
@@ -24,7 +23,6 @@ const pages = [
   { title: 'Sessions', Page: AccountSessionsPage },
   { title: 'Permissions', Page: PermissionsPage },
   { title: 'Audit Logs', Page: AuditLogsPage },
-  { title: 'System Status', Page: SystemStatusPage },
 ] as const;
 
 describe('dashboard placeholder pages', () => {

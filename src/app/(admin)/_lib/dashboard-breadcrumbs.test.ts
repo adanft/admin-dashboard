@@ -13,10 +13,7 @@ describe('getDashboardBreadcrumbs', () => {
       { label: 'Users' },
     ]);
 
-    expect(getDashboardBreadcrumbs('/system/status')).toEqual([
-      { href: '/', label: 'Dashboard' },
-      { label: 'System Status' },
-    ]);
+    expect(getDashboardBreadcrumbs('/system/status')).toEqual([{ label: 'Dashboard' }]);
   });
 
   it('adds stable child labels for account and users subroutes', () => {
