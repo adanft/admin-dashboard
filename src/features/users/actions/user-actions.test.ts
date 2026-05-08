@@ -240,6 +240,26 @@ describe('users Server Actions', () => {
     expect(mocks.revalidatePath).toHaveBeenCalledWith('/users/user-4');
     expect(mocks.revalidatePath).toHaveBeenCalledWith('/users/user-4/roles');
   });
+
+  it('reports uncertainty and revalidates when user role sync partially succeeds', async () => {
+    mocks.usersApi.assignRoles.mockResolvedValue(undefined);
+    mocks.usersApi.removeRoles.mockRejectedValue(
+      new mocks.MockAdminApiError(500, 'backend detail'),
+    );
+
+    await expect(
+      updateUserRolesAction({ status: 'idle' }, createUserRolesFormData()),
+    ).resolves.toEqual({
+      status: 'error',
+      message: 'Some role changes may have been saved. Refresh to confirm current assignments.',
+    });
+
+    expect(mocks.usersApi.assignRoles).toHaveBeenCalledWith('user-4', ['role-3'], 'access-token');
+    expect(mocks.usersApi.removeRoles).toHaveBeenCalledWith('user-4', ['role-1'], 'access-token');
+    expect(mocks.revalidatePath).toHaveBeenCalledWith('/users');
+    expect(mocks.revalidatePath).toHaveBeenCalledWith('/users/user-4');
+    expect(mocks.revalidatePath).toHaveBeenCalledWith('/users/user-4/roles');
+  });
 });
 
 function createCreateUserFormData(overrides: Record<string, string> = {}) {

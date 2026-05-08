@@ -135,6 +135,8 @@ export async function updateRolePermissionsAction(
     return { status: 'error', message: EXPIRED_SESSION_MESSAGE } as const;
   }
 
+  let changedPermissions = false;
+
   try {
     const currentPermissionIdSet = new Set(currentPermissionIds);
     const selectedPermissionIdSet = new Set(selectedPermissionIds);
@@ -147,16 +149,28 @@ export async function updateRolePermissionsAction(
 
     if (permissionIdsToAssign.length > 0) {
       await rolesApi.assignPermissions(roleId, permissionIdsToAssign, token);
+      changedPermissions = true;
     }
 
     if (permissionIdsToRemove.length > 0) {
       await rolesApi.removePermissions(roleId, permissionIdsToRemove, token);
+      changedPermissions = true;
     }
 
     revalidatePath('/roles');
     revalidatePath(`/roles/${roleId}`);
     return { status: 'success', message: 'Role permissions updated.' } as const;
   } catch (error) {
+    if (changedPermissions) {
+      revalidatePath('/roles');
+      revalidatePath(`/roles/${roleId}`);
+      return {
+        status: 'error',
+        message:
+          'Some permission changes may have been saved. Refresh to confirm current assignments.',
+      } as const;
+    }
+
     return { status: 'error', message: getPermissionMutationErrorMessage(error) } as const;
   }
 }

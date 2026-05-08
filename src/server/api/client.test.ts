@@ -357,6 +357,23 @@ describe('authenticated mutation helpers', () => {
     } satisfies Partial<AdminApiError>);
   });
 
+  it('supports structured backend error envelopes', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({ error: { code: 'SESSION_REVOKED', message: 'session gone' } }),
+        { status: 404 },
+      ),
+    );
+
+    await expect(
+      requestAuthenticatedDelete({ path: '/auth/sessions/session-1', token: 'access-token' }),
+    ).rejects.toMatchObject({
+      code: 'SESSION_REVOKED',
+      message: 'session gone',
+      status: 404,
+    } satisfies Partial<AdminApiError>);
+  });
+
   it('includes the refresh cookie on authenticated DELETE requests when provided', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 204 }));
 

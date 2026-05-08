@@ -37,6 +37,7 @@ export default function RolePermissionsPageContent({
           assignedPermissions={state.assignedPermissions}
           availablePermissions={state.availablePermissions}
           permissionsError={state.permissionsError}
+          permissionsWarning={state.permissionsWarning}
           roleId={state.role.id}
         />
       ) : (

@@ -178,8 +178,16 @@ export const rolesApi = {
 
     return mapRoleProfileResponse(response);
   },
-  deleteRole(id: string, token: string): Promise<void> {
-    return requestAuthenticatedDelete({ path: `/roles/${encodeURIComponent(id)}`, token });
+  async deleteRole(id: string, token: string): Promise<void> {
+    try {
+      await requestAuthenticatedDelete({ path: `/roles/${encodeURIComponent(id)}`, token });
+    } catch (error) {
+      if (isAdminApiError(error) && error.status === 404) {
+        return;
+      }
+
+      throw error;
+    }
   },
   async listRolePermissions(id: string, token: string): Promise<PermissionSummary[]> {
     const response = await requestAuthenticatedGet<unknown>({

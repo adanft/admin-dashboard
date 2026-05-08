@@ -11,7 +11,13 @@ import RolePermissionsPage from './page';
 const getRoleMock = vi.hoisted(() => vi.fn<() => Promise<RoleProfile>>());
 const listRolePermissionsMock = vi.hoisted(() => vi.fn<() => Promise<PermissionSummary[]>>());
 const listPermissionsMock = vi.hoisted(() =>
-  vi.fn<() => Promise<{ permissions: PermissionSummary[] }>>(),
+  vi.fn<
+    () => Promise<{
+      permissions: PermissionSummary[];
+      pagination: { total: number; limit: number; offset: number };
+      total: number;
+    }>
+  >(),
 );
 
 vi.mock('react', async (importOriginal) => {
@@ -71,6 +77,8 @@ describe('RolePermissionsPage', () => {
         permission('perm-1', 'roles.read', 'Read roles'),
         permission('perm-2', 'roles.write', 'Write roles'),
       ],
+      pagination: { total: 2, limit: 100, offset: 0 },
+      total: 2,
     });
   });
 
@@ -89,6 +97,20 @@ describe('RolePermissionsPage', () => {
     expect(markup).toContain('Write roles');
     expect(markup).toContain('Save changes');
     expect(markup).toContain('Cancel');
+  });
+
+  it('warns when the available permissions selector is truncated by the backend page size', async () => {
+    listPermissionsMock.mockResolvedValue({
+      permissions: [permission('perm-1', 'roles.read', 'Read roles')],
+      pagination: { total: 150, limit: 100, offset: 0 },
+      total: 150,
+    });
+
+    const markup = await renderPermissionsPage('role-1');
+
+    expect(markup).toContain(
+      'Only the first 1 of 150 permissions are available here. Some permissions may be missing from this selector.',
+    );
   });
 
   it('blocks permission mutation for system roles', async () => {

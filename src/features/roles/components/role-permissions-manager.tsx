@@ -16,6 +16,7 @@ type RolePermissionsManagerProps = {
   assignedPermissions: PermissionSummary[];
   availablePermissions: PermissionSummary[];
   permissionsError?: string;
+  permissionsWarning?: string;
   roleId: string;
 };
 
@@ -30,6 +31,7 @@ export default function RolePermissionsManager({
   assignedPermissions,
   availablePermissions,
   permissionsError,
+  permissionsWarning,
   roleId,
 }: RolePermissionsManagerProps) {
   const [state, formAction, isPending] = useActionState(updateRolePermissionsAction, initialState);
@@ -52,6 +54,8 @@ export default function RolePermissionsManager({
           {permissionsError}
         </p>
       ) : null}
+
+      {permissionsWarning ? <p className="text-foreground">{permissionsWarning}</p> : null}
 
       {!permissionsError ? (
         <form action={formAction} aria-describedby={messageId} className="space-y-6">

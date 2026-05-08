@@ -116,21 +116,24 @@ export function mapAuditLogsListResponse(response: unknown): AuditLogsList {
 export function mapAuditLogEvent(response: unknown): AuditLogEvent {
   const event = isRecord(response) ? response : {};
   const id = readString(event.id) ?? 'unknown-audit-log';
-  const actorId = readString(event.actorId);
+  const actorId = readString(event.actorId) ?? readString(event.actor_id);
+  const resourceId = readString(event.resourceId) ?? readString(event.resource_id);
+  const ipAddress = readString(event.ipAddress) ?? readString(event.ip_address);
+  const userAgent = readString(event.userAgent) ?? readString(event.user_agent);
   const metadata = readAuditLogMetadata(event.metadata);
 
   return {
     id,
-    actorType: readString(event.actorType) ?? 'unknown',
+    actorType: readString(event.actorType) ?? readString(event.actor_type) ?? 'unknown',
     ...(actorId ? { actorId } : {}),
     action: readString(event.action) ?? 'unknown',
     category: readString(event.category) ?? 'unknown',
     resource: readString(event.resource) ?? 'unknown',
-    ...(readString(event.resourceId) ? { resourceId: readString(event.resourceId) } : {}),
+    ...(resourceId ? { resourceId } : {}),
     result: readString(event.result) ?? 'unknown',
-    createdAt: readString(event.createdAt) ?? '—',
-    ...(readString(event.ipAddress) ? { ipAddress: readString(event.ipAddress) } : {}),
-    ...(readString(event.userAgent) ? { userAgent: readString(event.userAgent) } : {}),
+    createdAt: readString(event.createdAt) ?? readString(event.created_at) ?? '—',
+    ...(ipAddress ? { ipAddress } : {}),
+    ...(userAgent ? { userAgent } : {}),
     ...(readString(event.reason) ? { reason: readString(event.reason) } : {}),
     ...(metadata !== undefined ? { metadata } : {}),
   };

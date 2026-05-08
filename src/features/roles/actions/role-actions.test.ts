@@ -176,6 +176,32 @@ describe('roles Server Actions', () => {
     );
     expect(mocks.revalidatePath).toHaveBeenCalledWith('/roles/role-1');
   });
+
+  it('reports uncertainty and revalidates when role permission sync partially succeeds', async () => {
+    mocks.rolesApi.assignPermissions.mockResolvedValue(undefined);
+    mocks.rolesApi.removePermissions.mockRejectedValue(new mocks.MockAdminApiError(500));
+
+    await expect(
+      updateRolePermissionsAction({ status: 'idle' }, permissionFormData()),
+    ).resolves.toEqual({
+      status: 'error',
+      message:
+        'Some permission changes may have been saved. Refresh to confirm current assignments.',
+    });
+
+    expect(mocks.rolesApi.assignPermissions).toHaveBeenCalledWith(
+      'role-1',
+      ['permission-3'],
+      'access-token',
+    );
+    expect(mocks.rolesApi.removePermissions).toHaveBeenCalledWith(
+      'role-1',
+      ['permission-1'],
+      'access-token',
+    );
+    expect(mocks.revalidatePath).toHaveBeenCalledWith('/roles');
+    expect(mocks.revalidatePath).toHaveBeenCalledWith('/roles/role-1');
+  });
 });
 
 function createRoleFormData(overrides: Record<string, string> = {}) {

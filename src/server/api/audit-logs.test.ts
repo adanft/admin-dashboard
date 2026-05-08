@@ -63,6 +63,36 @@ describe('mapAuditLogEvent', () => {
     });
   });
 
+  it('supports snake_case audit log aliases without changing raw values', () => {
+    expect(
+      mapAuditLogEvent({
+        id: 'audit-snake',
+        actor_type: 'service_account',
+        actor_id: 'actor-2',
+        action: 'role_permission_added',
+        category: 'rbac_admin',
+        resource: 'role',
+        resource_id: 'role-1',
+        result: 'success',
+        created_at: '2026-05-07T11:00:00.000Z',
+        ip_address: '10.0.0.1',
+        user_agent: 'BackendWorker/1.0',
+      }),
+    ).toEqual({
+      id: 'audit-snake',
+      actorType: 'service_account',
+      actorId: 'actor-2',
+      action: 'role_permission_added',
+      category: 'rbac_admin',
+      resource: 'role',
+      resourceId: 'role-1',
+      result: 'success',
+      createdAt: '2026-05-07T11:00:00.000Z',
+      ipAddress: '10.0.0.1',
+      userAgent: 'BackendWorker/1.0',
+    });
+  });
+
   it('keeps metadata keys and values faithful to the backend contract', () => {
     expect(
       mapAuditLogEvent({

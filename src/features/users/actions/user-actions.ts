@@ -111,6 +111,8 @@ export async function updateUserRolesAction(
     return { status: 'error', message: EXPIRED_SESSION_MESSAGE };
   }
 
+  let changedRoles = false;
+
   try {
     const currentRoleIdSet = new Set(currentRoleIds);
     const selectedRoleIdSet = new Set(selectedRoleIds);
@@ -119,10 +121,12 @@ export async function updateUserRolesAction(
 
     if (roleIdsToAssign.length > 0) {
       await usersApi.assignRoles(userId, roleIdsToAssign, token);
+      changedRoles = true;
     }
 
     if (roleIdsToRemove.length > 0) {
       await usersApi.removeRoles(userId, roleIdsToRemove, token);
+      changedRoles = true;
     }
 
     revalidatePath('/users');
@@ -130,6 +134,16 @@ export async function updateUserRolesAction(
     revalidatePath(`/users/${userId}/roles`);
     return { status: 'success', message: 'User roles updated.' };
   } catch (error) {
+    if (changedRoles) {
+      revalidatePath('/users');
+      revalidatePath(`/users/${userId}`);
+      revalidatePath(`/users/${userId}/roles`);
+      return {
+        status: 'error',
+        message: 'Some role changes may have been saved. Refresh to confirm current assignments.',
+      };
+    }
+
     return { status: 'error', message: getRoleMutationErrorMessage(error) };
   }
 }

@@ -186,6 +186,29 @@ describe('rolesApi contract', () => {
     );
   });
 
+  it('treats deleting an already deleted role as idempotent success', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ success: false, error: 'not found', status: 404 }), {
+        status: 404,
+      }),
+    );
+
+    await expect(rolesApi.deleteRole('role-1', 'access-token')).resolves.toBeUndefined();
+  });
+
+  it('preserves forbidden delete errors', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ success: false, error: 'missing roles.delete', status: 403 }), {
+        status: 403,
+      }),
+    );
+
+    await expect(rolesApi.deleteRole('role-1', 'access-token')).rejects.toMatchObject({
+      status: 403,
+      message: 'missing roles.delete',
+    });
+  });
+
   it('mutates role permissions with bulk JSON POST and DELETE endpoints', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 204 }));
 

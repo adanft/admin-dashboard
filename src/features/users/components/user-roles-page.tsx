@@ -26,6 +26,7 @@ export default function UserRolesPageContent({ state }: UserRolesPageContentProp
           assignedRoles={state.user.roles}
           availableRoles={state.availableRoles}
           rolesError={state.rolesError}
+          rolesWarning={state.rolesWarning}
           userId={state.user.id}
         />
       ) : (

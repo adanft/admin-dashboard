@@ -19,6 +19,7 @@ type UserRolesManagerProps = {
   assignedRoles: UserRoleSummary[];
   availableRoles: RoleSummary[];
   rolesError?: string;
+  rolesWarning?: string;
   userId: string;
 };
 
@@ -28,6 +29,7 @@ export default function UserRolesManager({
   assignedRoles,
   availableRoles,
   rolesError,
+  rolesWarning,
   userId,
 }: UserRolesManagerProps) {
   const [state, formAction, isPending] = useActionState(updateUserRolesAction, initialState);
@@ -48,6 +50,8 @@ export default function UserRolesManager({
           {rolesError}
         </p>
       ) : null}
+
+      {rolesWarning ? <p className="text-foreground">{rolesWarning}</p> : null}
 
       {!rolesError ? (
         <form action={formAction} aria-describedby={messageId} className="space-y-6">

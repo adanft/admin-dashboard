@@ -52,7 +52,7 @@ type AuthenticatedCookiePostOptions = {
 
 type ParsedEnvelopeBody<TData> = Partial<BackendEnvelope<TData>> & {
   code?: string;
-  error?: string;
+  error?: string | { code?: unknown; message?: unknown };
 };
 
 export type BackendRefreshCookie = {
@@ -322,12 +322,15 @@ async function parseEnvelope<TData>(response: Response): Promise<BackendEnvelope
 
   try {
     const body = (await response.json()) as ParsedEnvelopeBody<TData>;
+    const error = readEnvelopeError(body.error);
+    const code = body.code ?? error.code;
+    const message = error.message ?? fallbackError ?? 'Request failed.';
 
     if (body.success === false || !response.ok) {
       return {
         success: false,
-        code: body.code,
-        error: body.error || fallbackError || 'Request failed.',
+        code,
+        error: message,
         status: body.status ?? fallbackStatus,
       };
     }
@@ -347,6 +350,23 @@ async function parseEnvelope<TData>(response: Response): Promise<BackendEnvelope
     success: false,
     error: fallbackError || 'Request failed.',
     status: fallbackStatus,
+  };
+}
+
+function readEnvelopeError(error: ParsedEnvelopeBody<unknown>['error']) {
+  if (typeof error === 'string' && error.length > 0) {
+    return { message: error };
+  }
+
+  if (typeof error !== 'object' || error === null) {
+    return {};
+  }
+
+  return {
+    ...(typeof error.code === 'string' && error.code.length > 0 ? { code: error.code } : {}),
+    ...(typeof error.message === 'string' && error.message.length > 0
+      ? { message: error.message }
+      : {}),
   };
 }
 

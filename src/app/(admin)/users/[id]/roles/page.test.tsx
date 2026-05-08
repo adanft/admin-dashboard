@@ -85,6 +85,23 @@ describe('UserRolesPage', () => {
     expect(markup).toContain('Cancel');
   });
 
+  it('warns when the available roles selector is truncated by the backend page size', async () => {
+    listRolesMock.mockResolvedValue({
+      status: 'success',
+      data: {
+        rows: [role('role-1', 'admin', 'Administrator')],
+        pagination: { total: 125, limit: 100, offset: 0 },
+        total: 125,
+      },
+    });
+
+    const markup = await renderRolesPage('user-1');
+
+    expect(markup).toContain(
+      'Only the first 1 of 125 roles are available here. Some roles may be missing from this selector.',
+    );
+  });
+
   it('renders not-found without the role form', async () => {
     getUserMock.mockRejectedValue(new AdminApiError({ message: 'not found', status: 404 }));
 

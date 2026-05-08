@@ -169,11 +169,19 @@ export const accountApi = {
       throw new Error('Session id is required.');
     }
 
-    return await requestAuthenticatedDelete({
-      path: `/auth/sessions/${encodeURIComponent(trimmedSessionId)}`,
-      refreshToken,
-      token,
-    });
+    try {
+      await requestAuthenticatedDelete({
+        path: `/auth/sessions/${encodeURIComponent(trimmedSessionId)}`,
+        refreshToken,
+        token,
+      });
+    } catch (error) {
+      if (isAdminApiError(error) && error.status === 404) {
+        return;
+      }
+
+      throw error;
+    }
   },
 };
 

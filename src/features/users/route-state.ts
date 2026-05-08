@@ -13,7 +13,13 @@ export type UserRouteState =
     };
 
 export type UserRolesRouteState =
-  | { status: 'success'; availableRoles: RoleSummary[]; rolesError?: string; user: UserProfile }
+  | {
+      status: 'success';
+      availableRoles: RoleSummary[];
+      rolesError?: string;
+      rolesWarning?: string;
+      user: UserProfile;
+    }
   | Exclude<UserRouteState, { status: 'success' }>;
 
 const EXPIRED_SESSION_TITLE = 'Your session expired. Please sign in again.';
@@ -43,10 +49,16 @@ export async function loadUserRolesRouteState(id: string): Promise<UserRolesRout
     const user = await usersApi.getUser(id, session.accessToken);
     const rolesResult = await rolesApi.listRoles({ limit: 100, offset: 0 }, session.accessToken);
 
+    const rolesWarning =
+      rolesResult.status === 'success'
+        ? buildAvailableRolesWarning(rolesResult.data.total, rolesResult.data.rows.length)
+        : undefined;
+
     return {
       status: 'success',
       user,
       availableRoles: rolesResult.status === 'success' ? rolesResult.data.rows : [],
+      ...(rolesWarning ? { rolesWarning } : {}),
       ...(rolesResult.status === 'success'
         ? {}
         : { rolesError: 'Unable to load available roles right now.' }),
@@ -54,6 +66,12 @@ export async function loadUserRolesRouteState(id: string): Promise<UserRolesRout
   } catch (error) {
     return mapUserRouteError(error);
   }
+}
+
+function buildAvailableRolesWarning(total: number, loaded: number) {
+  return total > loaded
+    ? `Only the first ${loaded} of ${total} roles are available here. Some roles may be missing from this selector.`
+    : undefined;
 }
 
 export async function hasCreateUserSession() {

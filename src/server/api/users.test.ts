@@ -585,6 +585,16 @@ describe('usersApi CRUD contract', () => {
     );
   });
 
+  it('treats deleting an already deleted user as idempotent success', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ success: false, error: 'not found', status: 404 }), {
+        status: 404,
+      }),
+    );
+
+    await expect(usersApi.deleteUser('user-3', 'access-token')).resolves.toBeUndefined();
+  });
+
   it('mutates user roles with bulk JSON POST and DELETE endpoints', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 204 }));
 

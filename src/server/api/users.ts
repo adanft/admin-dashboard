@@ -246,8 +246,16 @@ export const usersApi = {
 
     return mapUserProfileResponse(response);
   },
-  deleteUser(id: string, token: string): Promise<void> {
-    return requestAuthenticatedDelete({ path: `/users/${encodeURIComponent(id)}`, token });
+  async deleteUser(id: string, token: string): Promise<void> {
+    try {
+      await requestAuthenticatedDelete({ path: `/users/${encodeURIComponent(id)}`, token });
+    } catch (error) {
+      if (isAdminApiError(error) && error.status === 404) {
+        return;
+      }
+
+      throw error;
+    }
   },
   assignRoles(userId: string, roleIds: string[], token: string): Promise<void> {
     return requestAuthenticatedJson<UserRolesPayload, void>({

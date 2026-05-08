@@ -10,6 +10,7 @@ export type RoleRouteState =
       assignedPermissions: PermissionSummary[];
       availablePermissions: PermissionSummary[];
       permissionsError?: string;
+      permissionsWarning?: string;
     }
   | {
       status: 'not-found' | 'unauthorized' | 'forbidden' | 'error';
@@ -45,12 +46,20 @@ export async function loadRoleRouteState(id: string): Promise<RoleRouteState> {
     const assignedPermissions = assignedResult.status === 'fulfilled' ? assignedResult.value : [];
     const availablePermissions =
       availableResult.status === 'fulfilled' ? availableResult.value.permissions : [];
+    const permissionsWarning =
+      availableResult.status === 'fulfilled'
+        ? buildAvailablePermissionsWarning(
+            availableResult.value.total,
+            availableResult.value.permissions.length,
+          )
+        : undefined;
 
     return {
       status: 'success',
       role,
       assignedPermissions,
       availablePermissions,
+      ...(permissionsWarning ? { permissionsWarning } : {}),
       ...(assignedResult.status === 'rejected' || availableResult.status === 'rejected'
         ? { permissionsError: 'Unable to load role permissions right now.' }
         : {}),
@@ -58,6 +67,12 @@ export async function loadRoleRouteState(id: string): Promise<RoleRouteState> {
   } catch (error) {
     return mapRoleRouteError(error);
   }
+}
+
+function buildAvailablePermissionsWarning(total: number, loaded: number) {
+  return total > loaded
+    ? `Only the first ${loaded} of ${total} permissions are available here. Some permissions may be missing from this selector.`
+    : undefined;
 }
 
 export async function loadRoleDetailRouteState(id: string): Promise<RoleDetailRouteState> {

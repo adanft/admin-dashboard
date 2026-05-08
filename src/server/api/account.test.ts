@@ -294,6 +294,30 @@ describe('accountApi contract', () => {
     );
   });
 
+  it('treats revoking an already revoked session as idempotent success', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ success: false, error: 'not found', status: 404 }), {
+        status: 404,
+      }),
+    );
+
+    await expect(accountApi.revokeSession('session-1', 'access-token')).resolves.toBeUndefined();
+  });
+
+  it('preserves forbidden session revocation errors', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({ success: false, error: 'missing sessions.revoke', status: 403 }),
+        { status: 403 },
+      ),
+    );
+
+    await expect(accountApi.revokeSession('session-1', 'access-token')).rejects.toMatchObject({
+      status: 403,
+      message: 'missing sessions.revoke',
+    });
+  });
+
   it('rejects empty session revocation before calling the backend', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch');
 
