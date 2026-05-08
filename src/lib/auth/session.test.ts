@@ -1,13 +1,19 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { createSessionFromAuthData, persistRefreshCookie } from './session';
+import {
+  clearRefreshCookie,
+  createSessionFromAuthData,
+  persistRefreshCookie,
+  setRequiredPasswordChangeSessionFromAuthData,
+} from './session';
 
 const mocks = vi.hoisted(() => ({
+  cookieGet: vi.fn(),
   cookieSet: vi.fn(),
 }));
 
 vi.mock('next/headers', () => ({
-  cookies: vi.fn(async () => ({ set: mocks.cookieSet })),
+  cookies: vi.fn(async () => ({ get: mocks.cookieGet, set: mocks.cookieSet })),
 }));
 
 describe('createSessionFromAuthData', () => {
@@ -167,6 +173,54 @@ describe('persistRefreshCookie', () => {
       secure: process.env.NODE_ENV !== 'development',
       path: '/',
       expires,
+    });
+  });
+});
+
+describe('required password change session', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('stores temporary required password change tokens outside the dashboard session cookie', async () => {
+    await expect(
+      setRequiredPasswordChangeSessionFromAuthData({
+        accessToken: 'temporary-token',
+        expiresAt: 1_800_000_000_000,
+      }),
+    ).resolves.toBe(true);
+
+    expect(mocks.cookieSet).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'required_password_change_session',
+        httpOnly: true,
+        path: '/auth/change-password',
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV !== 'development',
+      }),
+    );
+    expect(mocks.cookieSet).not.toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'admin_session' }),
+    );
+  });
+});
+
+describe('clearRefreshCookie', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('expires the backend refresh cookie on the dashboard domain', async () => {
+    await clearRefreshCookie();
+
+    expect(mocks.cookieSet).toHaveBeenCalledWith({
+      name: 'refresh_token',
+      value: '',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV !== 'development',
+      path: '/',
+      maxAge: 0,
     });
   });
 });

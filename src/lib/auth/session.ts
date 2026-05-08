@@ -19,6 +19,7 @@ type RefreshCookie = {
 
 const DEFAULT_SESSION_TTL_SECONDS = 60 * 60;
 const MS_PER_SECOND = 1000;
+const REQUIRED_PASSWORD_CHANGE_COOKIE = 'required_password_change_session';
 const UNIX_SECONDS_THRESHOLD = 10_000_000_000;
 
 export async function getSession() {
@@ -53,6 +54,39 @@ export async function setSessionFromAuthData(data: AuthSessionData) {
   return true;
 }
 
+export async function getRequiredPasswordChangeSession() {
+  const cookieStore = await cookies();
+  return decodeAdminSession(cookieStore.get(REQUIRED_PASSWORD_CHANGE_COOKIE)?.value);
+}
+
+export async function setRequiredPasswordChangeSessionFromAuthData(data: AuthSessionData) {
+  const session = createSessionFromAuthData(data);
+
+  if (!session) {
+    return false;
+  }
+
+  const encodedSession = encodeAdminSession(session);
+
+  if (!encodedSession) {
+    return false;
+  }
+
+  const cookieStore = await cookies();
+
+  cookieStore.set({
+    name: REQUIRED_PASSWORD_CHANGE_COOKIE,
+    value: encodedSession,
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV !== 'development',
+    path: '/auth/change-password',
+    expires: new Date(session.expiresAt),
+  });
+
+  return true;
+}
+
 export async function persistRefreshCookie(refreshCookie?: RefreshCookie) {
   if (!refreshCookie) {
     return;
@@ -72,9 +106,37 @@ export async function persistRefreshCookie(refreshCookie?: RefreshCookie) {
   });
 }
 
+export async function clearRefreshCookie() {
+  const cookieStore = await cookies();
+
+  cookieStore.set({
+    name: 'refresh_token',
+    value: '',
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV !== 'development',
+    path: '/',
+    maxAge: 0,
+  });
+}
+
 export async function clearSession() {
   const cookieStore = await cookies();
   cookieStore.delete(ADMIN_SESSION_COOKIE);
+}
+
+export async function clearRequiredPasswordChangeSession() {
+  const cookieStore = await cookies();
+
+  cookieStore.set({
+    name: REQUIRED_PASSWORD_CHANGE_COOKIE,
+    value: '',
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV !== 'development',
+    path: '/auth/change-password',
+    maxAge: 0,
+  });
 }
 
 export function createSessionFromAuthData(data: AuthSessionData): AdminSession | null {

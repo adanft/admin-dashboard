@@ -1,6 +1,6 @@
 import { ADMIN_SESSION_COOKIE, decodeAdminSession } from '@/lib/auth/session-cookie';
 
-const AUTH_PATHS = ['/auth', '/auth/sign-in', '/auth/sign-up'];
+const AUTH_PATHS = ['/auth', '/auth/sign-in', '/auth/sign-up', '/auth/change-password'];
 const PUBLIC_FILE_PATTERN = /\.[^/]+$/;
 
 export type AuthRedirectDecision = {

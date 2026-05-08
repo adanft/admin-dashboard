@@ -3,7 +3,14 @@
 import { redirect } from 'next/navigation';
 
 import { authApi, isAdminApiError } from '@/lib/api/client';
-import { clearSession, persistRefreshCookie, setSessionFromAuthData } from '@/lib/auth/session';
+import {
+  clearRefreshCookie,
+  clearRequiredPasswordChangeSession,
+  clearSession,
+  persistRefreshCookie,
+  setRequiredPasswordChangeSessionFromAuthData,
+  setSessionFromAuthData,
+} from '@/lib/auth/session';
 import type { AuthActionState, LoginPayload } from '@/lib/auth/types';
 
 const INVALID_SIGN_IN_MESSAGE = 'Invalid username or password.';
@@ -24,7 +31,7 @@ export async function signInAction(
     return { error: result.error };
   }
 
-  redirect('/');
+  redirect(result.redirectTo);
 }
 
 async function login(payload: LoginPayload) {
@@ -33,8 +40,21 @@ async function login(payload: LoginPayload) {
 
     if (data.requiredAction === 'change_password') {
       await clearSession();
-      return { success: false, error: 'Please change your password before sign in.' } as const;
+      await clearRefreshCookie();
+      const passwordChangeSessionWasSet = await setRequiredPasswordChangeSessionFromAuthData(data);
+
+      if (!passwordChangeSessionWasSet) {
+        await clearRequiredPasswordChangeSession();
+        return {
+          success: false,
+          error: 'We couldn’t start password change. Please try again.',
+        } as const;
+      }
+
+      return { success: true, redirectTo: '/auth/change-password' } as const;
     }
+
+    await clearRequiredPasswordChangeSession();
 
     const sessionWasSet = await setSessionFromAuthData(data);
 
@@ -48,9 +68,10 @@ async function login(payload: LoginPayload) {
 
     await persistRefreshCookie(refreshCookie);
 
-    return { success: true } as const;
+    return { success: true, redirectTo: '/' } as const;
   } catch (error) {
     await clearSession();
+    await clearRequiredPasswordChangeSession();
 
     if (isAdminApiError(error) && [400, 401].includes(error.status)) {
       return { success: false, error: INVALID_SIGN_IN_MESSAGE } as const;

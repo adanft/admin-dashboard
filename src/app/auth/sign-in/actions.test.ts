@@ -16,12 +16,15 @@ const mocks = vi.hoisted(() => {
     authApi: {
       login: vi.fn(),
     },
+    clearRefreshCookie: vi.fn(),
+    clearRequiredPasswordChangeSession: vi.fn(),
     clearSession: vi.fn(),
     MockAdminApiError,
     redirect: vi.fn((path: string) => {
       throw new Error(`NEXT_REDIRECT:${path}`);
     }),
     persistRefreshCookie: vi.fn(),
+    setRequiredPasswordChangeSessionFromAuthData: vi.fn(),
     setSessionFromAuthData: vi.fn(),
   };
 });
@@ -32,8 +35,11 @@ vi.mock('@/lib/api/client', () => ({
 }));
 
 vi.mock('@/lib/auth/session', () => ({
+  clearRefreshCookie: mocks.clearRefreshCookie,
+  clearRequiredPasswordChangeSession: mocks.clearRequiredPasswordChangeSession,
   clearSession: mocks.clearSession,
   persistRefreshCookie: mocks.persistRefreshCookie,
+  setRequiredPasswordChangeSessionFromAuthData: mocks.setRequiredPasswordChangeSessionFromAuthData,
   setSessionFromAuthData: mocks.setSessionFromAuthData,
 }));
 
@@ -67,6 +73,42 @@ describe('sign in action', () => {
     await expect(signInAction({}, createSignInFormData())).rejects.toThrow('NEXT_REDIRECT:/');
 
     expect(mocks.persistRefreshCookie).toHaveBeenCalledWith(refreshCookie);
+  });
+
+  it('routes required password change logins without creating a full dashboard session', async () => {
+    const sessionData = {
+      accessToken: 'temporary-token',
+      expiresIn: 900,
+      requiredAction: 'change_password',
+    };
+    mocks.authApi.login.mockResolvedValue({ data: sessionData });
+    mocks.setRequiredPasswordChangeSessionFromAuthData.mockResolvedValue(true);
+
+    await expect(signInAction({}, createSignInFormData())).rejects.toThrow(
+      'NEXT_REDIRECT:/auth/change-password',
+    );
+
+    expect(mocks.clearSession).toHaveBeenCalled();
+    expect(mocks.clearRefreshCookie).toHaveBeenCalled();
+    expect(mocks.setRequiredPasswordChangeSessionFromAuthData).toHaveBeenCalledWith(sessionData);
+    expect(mocks.redirect).toHaveBeenCalledWith('/auth/change-password');
+    expect(mocks.setSessionFromAuthData).not.toHaveBeenCalled();
+    expect(mocks.persistRefreshCookie).not.toHaveBeenCalled();
+  });
+
+  it('returns an error when required password change lacks a usable temporary token', async () => {
+    mocks.authApi.login.mockResolvedValue({
+      data: { requiredAction: 'change_password' },
+    });
+    mocks.setRequiredPasswordChangeSessionFromAuthData.mockResolvedValue(false);
+
+    await expect(signInAction({}, createSignInFormData())).resolves.toEqual({
+      error: 'We couldn’t start password change. Please try again.',
+    });
+
+    expect(mocks.clearRequiredPasswordChangeSession).toHaveBeenCalled();
+    expect(mocks.setSessionFromAuthData).not.toHaveBeenCalled();
+    expect(mocks.persistRefreshCookie).not.toHaveBeenCalled();
   });
 
   it.each([400, 401])(

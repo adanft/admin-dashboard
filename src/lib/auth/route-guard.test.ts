@@ -32,12 +32,16 @@ describe('auth route guard', () => {
     });
   });
 
-  it.each(['/auth', '/auth/sign-in', '/auth/sign-up'])(
+  it.each(['/auth', '/auth/sign-in', '/auth/sign-up', '/auth/change-password'])(
     'redirects authenticated auth route %s to the dashboard',
     (pathname) => {
       expect(getAuthRedirectDecision(pathname, createValidCookie())).toEqual({ redirectTo: '/' });
     },
   );
+
+  it('allows required password change route without a full dashboard session', () => {
+    expect(getAuthRedirectDecision('/auth/change-password', undefined)).toEqual({});
+  });
 
   it('allows non-root public paths to continue without redirects', () => {
     expect(getAuthRedirectDecision('/favicon.ico', undefined)).toEqual({});
