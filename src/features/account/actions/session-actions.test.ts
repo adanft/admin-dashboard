@@ -16,8 +16,8 @@ const mocks = vi.hoisted(() => ({
   revokeSession: vi.fn(),
 }));
 
-vi.mock('@/lib/api/auth', () => ({
-  authApi: {
+vi.mock('@/server/api/account', () => ({
+  accountApi: {
     revokeSession: mocks.revokeSession,
   },
 }));

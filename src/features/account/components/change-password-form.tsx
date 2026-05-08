@@ -5,7 +5,7 @@ import Field from '@adanft/ui/field';
 import Input from '@adanft/ui/input';
 import { useActionState } from 'react';
 
-import { type AccountActionState, changePasswordAction } from '../_lib/account-actions';
+import { type AccountActionState, changePasswordAction } from '../actions/account-actions';
 
 const initialState: AccountActionState = {};
 

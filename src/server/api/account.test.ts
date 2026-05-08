@@ -3,12 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   AdminApiError,
-  authApi,
+  accountApi,
   mapAuthSessionsResponse,
   mapCurrentAccountResponse,
   toAuthSessionsState,
   toCurrentAccountState,
-} from './auth';
+} from './account';
 
 const originalAdminApiBaseUrl = process.env.ADMIN_API_BASE_URL;
 
@@ -150,7 +150,7 @@ describe('toAuthSessionsState', () => {
   });
 });
 
-describe('authApi account contract', () => {
+describe('accountApi contract', () => {
   beforeEach(() => {
     process.env.ADMIN_API_BASE_URL = 'https://admin-api.test/';
   });
@@ -172,7 +172,7 @@ describe('authApi account contract', () => {
       ),
     );
 
-    await expect(authApi.getCurrentAccount('access-token')).resolves.toMatchObject({
+    await expect(accountApi.getCurrentAccount('access-token')).resolves.toMatchObject({
       status: 'success',
       data: { actor: { id: 'user-1', username: 'ada' } },
     });
@@ -193,7 +193,7 @@ describe('authApi account contract', () => {
     );
 
     await expect(
-      authApi.changePassword(
+      accountApi.changePassword(
         { currentPassword: 'current-secret', newPassword: 'new-secret' },
         'access-token',
       ),
@@ -216,7 +216,7 @@ describe('authApi account contract', () => {
   it('logs out all sessions with Bearer token and refresh cookie', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 204 }));
 
-    await expect(authApi.logoutAll('access-token', 'refresh-token')).resolves.toBeUndefined();
+    await expect(accountApi.logoutAll('access-token', 'refresh-token')).resolves.toBeUndefined();
 
     expect(fetch).toHaveBeenCalledWith('https://admin-api.test/auth/logout-all', {
       method: 'POST',
@@ -249,7 +249,7 @@ describe('authApi account contract', () => {
       ),
     );
 
-    await expect(authApi.getSessions('access-token', 'refresh-token')).resolves.toEqual({
+    await expect(accountApi.getSessions('access-token', 'refresh-token')).resolves.toEqual({
       status: 'success',
       data: [
         {
@@ -277,7 +277,7 @@ describe('authApi account contract', () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 204 }));
 
     await expect(
-      authApi.revokeSession('session/with space', 'access-token', 'refresh-token'),
+      accountApi.revokeSession('session/with space', 'access-token', 'refresh-token'),
     ).resolves.toBeUndefined();
 
     expect(fetch).toHaveBeenCalledWith(
@@ -297,7 +297,7 @@ describe('authApi account contract', () => {
   it('rejects empty session revocation before calling the backend', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch');
 
-    await expect(authApi.revokeSession(' ', 'access-token')).rejects.toThrow(
+    await expect(accountApi.revokeSession(' ', 'access-token')).rejects.toThrow(
       'Session id is required.',
     );
     expect(fetchMock).not.toHaveBeenCalled();

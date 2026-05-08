@@ -2,8 +2,8 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import type { ChangePasswordPayload } from '@/lib/api/auth';
-import { authApi, isAdminApiError } from '@/lib/api/auth';
+import type { ChangePasswordPayload } from '@/server/api/account';
+import { accountApi, isAdminApiError } from '@/server/api/account';
 import { clearRefreshCookie, clearSession, getSession } from '@/server/auth/session';
 
 type ChangePasswordField = keyof ChangePasswordPayload;
@@ -39,7 +39,7 @@ export async function changePasswordAction(
   }
 
   try {
-    await authApi.changePassword(payload.payload, token);
+    await accountApi.changePassword(payload.payload, token);
     return {
       status: 'success',
       message: 'Password updated. Already-issued access tokens expire naturally.',
@@ -62,7 +62,7 @@ export async function logoutAllSessionsAction(
   }
 
   try {
-    await authApi.logoutAll(session.accessToken, refreshToken);
+    await accountApi.logoutAll(session.accessToken, refreshToken);
   } catch {
     return {
       status: 'error',

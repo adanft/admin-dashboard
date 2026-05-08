@@ -25,8 +25,8 @@ class MockAdminApiError extends Error {
   }
 }
 
-vi.mock('@/lib/api/auth', () => ({
-  authApi: {
+vi.mock('@/server/api/account', () => ({
+  accountApi: {
     changePassword: mocks.changePassword,
     logoutAll: mocks.logoutAll,
   },

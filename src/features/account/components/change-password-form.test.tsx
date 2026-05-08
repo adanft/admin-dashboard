@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { AccountActionState } from '../_lib/account-actions';
+import type { AccountActionState } from '../actions/account-actions';
 import ChangePasswordForm from './change-password-form';
 
 const useActionStateMock = vi.hoisted(() => vi.fn());

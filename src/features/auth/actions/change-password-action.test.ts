@@ -13,7 +13,7 @@ const mocks = vi.hoisted(() => {
   }
 
   return {
-    authApi: {
+    accountApi: {
       changePassword: vi.fn(),
     },
     clearRefreshCookie: vi.fn(),
@@ -27,8 +27,8 @@ const mocks = vi.hoisted(() => {
   };
 });
 
-vi.mock('@/lib/api/auth', () => ({
-  authApi: mocks.authApi,
+vi.mock('@/server/api/account', () => ({
+  accountApi: mocks.accountApi,
   isAdminApiError: (error: unknown) => error instanceof mocks.MockAdminApiError,
 }));
 
@@ -50,13 +50,13 @@ describe('required password change action', () => {
 
   it('changes the password with the temporary token, clears local auth cookies, and returns to sign-in', async () => {
     mocks.getRequiredPasswordChangeSession.mockResolvedValue({ accessToken: 'temporary-token' });
-    mocks.authApi.changePassword.mockResolvedValue({ id: 'user-1' });
+    mocks.accountApi.changePassword.mockResolvedValue({ id: 'user-1' });
 
     await expect(requiredPasswordChangeAction({}, createPasswordFormData())).rejects.toThrow(
       'NEXT_REDIRECT:/auth/sign-in?passwordChanged=1',
     );
 
-    expect(mocks.authApi.changePassword).toHaveBeenCalledWith(
+    expect(mocks.accountApi.changePassword).toHaveBeenCalledWith(
       { currentPassword: 'temporary-secret', newPassword: 'new-secret' },
       'temporary-token',
     );
@@ -76,7 +76,7 @@ describe('required password change action', () => {
       fieldErrors: { newPassword: 'New password is required.' },
     });
 
-    expect(mocks.authApi.changePassword).not.toHaveBeenCalled();
+    expect(mocks.accountApi.changePassword).not.toHaveBeenCalled();
   });
 
   it('returns an expired-session error when the temporary token is unavailable', async () => {
@@ -88,12 +88,12 @@ describe('required password change action', () => {
     });
 
     expect(mocks.clearRequiredPasswordChangeSession).toHaveBeenCalled();
-    expect(mocks.authApi.changePassword).not.toHaveBeenCalled();
+    expect(mocks.accountApi.changePassword).not.toHaveBeenCalled();
   });
 
   it('maps backend validation failures to a password policy error message', async () => {
     mocks.getRequiredPasswordChangeSession.mockResolvedValue({ accessToken: 'temporary-token' });
-    mocks.authApi.changePassword.mockRejectedValue(
+    mocks.accountApi.changePassword.mockRejectedValue(
       new mocks.MockAdminApiError(400, 'password is too weak'),
     );
 

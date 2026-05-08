@@ -1,9 +1,9 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { AuthSessionsState } from '@/lib/api/auth';
+import type { AuthSessionsState } from '@/server/api/account';
 import { getSession } from '@/server/auth/session';
-import AccountSessionsPage from './page';
+import AccountSessionsPage from './account-sessions-page';
 
 const getSessionsMock = vi.hoisted(() => vi.fn<() => Promise<AuthSessionsState>>());
 const cookieGetMock = vi.hoisted(() => vi.fn(() => ({ value: 'refresh-token' })));
@@ -16,18 +16,19 @@ vi.mock('next/headers', () => ({
   cookies: vi.fn(() => ({ get: cookieGetMock })),
 }));
 
-vi.mock('@/lib/api/auth', async () => {
-  const actual = await vi.importActual<typeof import('@/lib/api/auth')>('@/lib/api/auth');
+vi.mock('@/server/api/account', async () => {
+  const actual =
+    await vi.importActual<typeof import('@/server/api/account')>('@/server/api/account');
 
   return {
     ...actual,
-    authApi: {
+    accountApi: {
       getSessions: getSessionsMock,
     },
   };
 });
 
-vi.mock('./_lib/session-actions', () => ({
+vi.mock('../actions/session-actions', () => ({
   revokeSessionAction: '/account/sessions/revoke',
 }));
 

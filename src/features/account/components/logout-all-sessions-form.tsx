@@ -4,7 +4,7 @@ import Button from '@adanft/ui/button';
 import Field from '@adanft/ui/field';
 import { useActionState } from 'react';
 
-import { type AccountActionState, logoutAllSessionsAction } from '../_lib/account-actions';
+import { type AccountActionState, logoutAllSessionsAction } from '../actions/account-actions';
 
 const initialState: AccountActionState = {};
 

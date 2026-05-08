@@ -128,7 +128,7 @@ export function toAuthSessionsState(
   return { status: 'error', message: 'Unable to load your sessions right now.' };
 }
 
-export const authApi = {
+export const accountApi = {
   async getCurrentAccount(token: string): Promise<CurrentAccountState> {
     try {
       const response = await requestAuthenticatedGet<unknown>({ path: '/auth/me', token });

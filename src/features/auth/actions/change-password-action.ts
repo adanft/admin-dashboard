@@ -2,8 +2,8 @@
 
 import { redirect } from 'next/navigation';
 
-import type { ChangePasswordPayload } from '@/lib/api/auth';
-import { authApi, isAdminApiError } from '@/lib/api/auth';
+import type { ChangePasswordPayload } from '@/server/api/account';
+import { accountApi, isAdminApiError } from '@/server/api/account';
 import {
   clearRefreshCookie,
   clearRequiredPasswordChangeSession,
@@ -49,7 +49,7 @@ export async function requiredPasswordChangeAction(
   }
 
   try {
-    await authApi.changePassword(payload.payload, session.accessToken);
+    await accountApi.changePassword(payload.payload, session.accessToken);
   } catch (error) {
     return { status: 'error', message: getRequiredPasswordChangeErrorMessage(error) };
   }

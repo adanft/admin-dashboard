@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { authApi } from '@/lib/api/auth';
+import { accountApi } from '@/server/api/account';
 import { clearRefreshCookie, clearSession, getSession } from '@/server/auth/session';
 
 export async function revokeSessionAction(formData: FormData): Promise<void> {
@@ -25,7 +25,7 @@ export async function revokeSessionAction(formData: FormData): Promise<void> {
   const refreshToken = (await cookies()).get('refresh_token')?.value;
 
   try {
-    await authApi.revokeSession(sessionId, session.accessToken, refreshToken);
+    await accountApi.revokeSession(sessionId, session.accessToken, refreshToken);
   } catch {
     return;
   }
