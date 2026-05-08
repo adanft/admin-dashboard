@@ -2,16 +2,22 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AdminApiError } from '@/lib/api/client';
-import type { PermissionSummary } from '@/lib/api/permissions';
-import type { RoleProfile } from '@/lib/api/roles';
-import { getSession } from '@/lib/auth/session';
+import { AdminApiError } from '@/server/api/client';
+import type { PermissionSummary } from '@/server/api/permissions';
+import type { RoleProfile } from '@/server/api/roles';
+import { getSession } from '@/server/auth/session';
 import RolePermissionsPage from './page';
 
 const getRoleMock = vi.hoisted(() => vi.fn<() => Promise<RoleProfile>>());
 const listRolePermissionsMock = vi.hoisted(() => vi.fn<() => Promise<PermissionSummary[]>>());
 const listPermissionsMock = vi.hoisted(() =>
-  vi.fn<() => Promise<{ permissions: PermissionSummary[] }>>(),
+  vi.fn<
+    () => Promise<{
+      permissions: PermissionSummary[];
+      pagination: { total: number; limit: number; offset: number };
+      total: number;
+    }>
+  >(),
 );
 
 vi.mock('react', async (importOriginal) => {
@@ -22,12 +28,12 @@ vi.mock('react', async (importOriginal) => {
   };
 });
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   getSession: vi.fn(),
 }));
 
-vi.mock('@/lib/api/roles', async () => {
-  const actual = await vi.importActual<typeof import('@/lib/api/roles')>('@/lib/api/roles');
+vi.mock('@/server/api/roles', async () => {
+  const actual = await vi.importActual<typeof import('@/server/api/roles')>('@/server/api/roles');
 
   return {
     ...actual,
@@ -38,19 +44,20 @@ vi.mock('@/lib/api/roles', async () => {
   };
 });
 
-vi.mock('@/lib/api/permissions', async () => {
-  const actual =
-    await vi.importActual<typeof import('@/lib/api/permissions')>('@/lib/api/permissions');
+vi.mock('@/server/api/permissions', async () => {
+  const actual = await vi.importActual<typeof import('@/server/api/permissions')>(
+    '@/server/api/permissions',
+  );
 
   return {
     ...actual,
     permissionsApi: {
-      listPermissions: listPermissionsMock,
+      listPermissionsData: listPermissionsMock,
     },
   };
 });
 
-vi.mock('../../_lib/role-actions', () => ({
+vi.mock('@/features/roles/actions/role-actions', () => ({
   updateRolePermissionsAction: vi.fn(),
 }));
 
@@ -70,6 +77,8 @@ describe('RolePermissionsPage', () => {
         permission('perm-1', 'roles.read', 'Read roles'),
         permission('perm-2', 'roles.write', 'Write roles'),
       ],
+      pagination: { total: 2, limit: 100, offset: 0 },
+      total: 2,
     });
   });
 
@@ -88,6 +97,20 @@ describe('RolePermissionsPage', () => {
     expect(markup).toContain('Write roles');
     expect(markup).toContain('Save changes');
     expect(markup).toContain('Cancel');
+  });
+
+  it('warns when the available permissions selector is truncated by the backend page size', async () => {
+    listPermissionsMock.mockResolvedValue({
+      permissions: [permission('perm-1', 'roles.read', 'Read roles')],
+      pagination: { total: 150, limit: 100, offset: 0 },
+      total: 150,
+    });
+
+    const markup = await renderPermissionsPage('role-1');
+
+    expect(markup).toContain(
+      'Only the first 1 of 150 permissions are available here. Some permissions may be missing from this selector.',
+    );
   });
 
   it('blocks permission mutation for system roles', async () => {

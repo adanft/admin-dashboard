@@ -14,7 +14,7 @@
     "format": "biome format --write",
     "format:check": "biome format",
     "typecheck": "tsc --noEmit",
-    "check": "pnpm lint:ci && pnpm typecheck",
+    "check": "pnpm lint:ci && pnpm typecheck && pnpm test",
     "ci": "pnpm check && pnpm build"
   },
   "dependencies": {

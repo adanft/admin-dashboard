@@ -1,6 +1,6 @@
 import Box from '@adanft/ui/box';
 
-import SignUpForm from './sign-up-form';
+import SignUpForm from '@/features/auth/components/sign-up-form';
 
 export default function SignUpPage() {
   return (

@@ -58,9 +58,13 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 - Session-backed admin authentication with HttpOnly cookie storage and logout support.
 - Dashboard shell with sidebar navigation, top navbar, profile action, and contextual breadcrumbs.
+- Required password-change flow for users who must rotate credentials before dashboard access.
+- My Account profile view with password update support.
+- My Sessions management with current-session awareness, session revocation, and logout-all support.
 - Users management with list, search, pagination, create, detail, edit, delete, and role assignment flows.
 - Roles management with list, search, pagination, create, detail, edit, delete, and permission assignment flows.
-- Permission assignment uses bulk API contracts for role and user updates.
+- Permissions management with list, search, pagination, detail, and edit flows.
+- Audit Logs management with bounded filters, raw metadata display, pagination, and fidelity-first rendering.
 
 ## Scripts
 
@@ -76,7 +80,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 | `pnpm format` | Format files with Biome. |
 | `pnpm format:check` | Check formatting without writing files. |
 | `pnpm typecheck` | Run TypeScript without emitting files. |
-| `pnpm check` | Run Biome CI checks and TypeScript checks. |
+| `pnpm check` | Run Biome CI checks, TypeScript checks, and the Vitest suite. |
 | `pnpm ci` | Run all CI validation locally, including the production build. |
 
 ## Code quality
@@ -111,7 +115,8 @@ GitHub Actions runs on pushes and pull requests targeting `main`:
 1. install dependencies with pnpm and the frozen lockfile
 2. run Biome in CI mode
 3. run TypeScript checks
-4. build the application
+4. run the Vitest suite
+5. build the application
 
 ## License
 

@@ -1,9 +1,16 @@
 import Box from '@adanft/ui/box';
 import Image from 'next/image';
 
-import SignInForm from './sign-in-form';
+import SignInForm from '@/features/auth/components/sign-in-form';
 
-export default function SignInPage() {
+type SignInPageProps = {
+  searchParams?: Promise<{ passwordChanged?: string | string[] }>;
+};
+
+export default async function SignInPage({ searchParams }: SignInPageProps = {}) {
+  const params = searchParams ? await searchParams : {};
+  const passwordChanged = params.passwordChanged === '1';
+
   return (
     <main className="grid min-h-dvh place-items-center bg-background px-6 py-12 text-foreground">
       <Box className="w-full max-w-sm" padding="default" shadow="default" surface="default">
@@ -22,6 +29,11 @@ export default function SignInPage() {
               Enter your username and password to access the dashboard.
             </p>
           </div>
+          {passwordChanged ? (
+            <p aria-live="polite" className="text-sm text-success">
+              Password updated. Sign in with your new password.
+            </p>
+          ) : null}
           <SignInForm />
         </section>
       </Box>

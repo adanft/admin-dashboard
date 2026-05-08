@@ -2,10 +2,10 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AdminApiError } from '@/lib/api/client';
-import type { RoleSummary, RolesListState } from '@/lib/api/roles';
-import type { UserProfile } from '@/lib/api/users';
-import { getSession } from '@/lib/auth/session';
+import { AdminApiError } from '@/server/api/client';
+import type { RoleSummary, RolesListState } from '@/server/api/roles';
+import type { UserProfile } from '@/server/api/users';
+import { getSession } from '@/server/auth/session';
 import UserRolesPage from './page';
 
 const getUserMock = vi.hoisted(() => vi.fn<() => Promise<UserProfile>>());
@@ -19,12 +19,12 @@ vi.mock('react', async (importOriginal) => {
   };
 });
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   getSession: vi.fn(),
 }));
 
-vi.mock('@/lib/api/users', async () => {
-  const actual = await vi.importActual<typeof import('@/lib/api/users')>('@/lib/api/users');
+vi.mock('@/server/api/users', async () => {
+  const actual = await vi.importActual<typeof import('@/server/api/users')>('@/server/api/users');
 
   return {
     ...actual,
@@ -34,8 +34,8 @@ vi.mock('@/lib/api/users', async () => {
   };
 });
 
-vi.mock('@/lib/api/roles', async () => {
-  const actual = await vi.importActual<typeof import('@/lib/api/roles')>('@/lib/api/roles');
+vi.mock('@/server/api/roles', async () => {
+  const actual = await vi.importActual<typeof import('@/server/api/roles')>('@/server/api/roles');
 
   return {
     ...actual,
@@ -45,7 +45,7 @@ vi.mock('@/lib/api/roles', async () => {
   };
 });
 
-vi.mock('../../_lib/user-actions', () => ({
+vi.mock('@/features/users/actions/user-actions', () => ({
   updateUserRolesAction: vi.fn(),
 }));
 
@@ -83,6 +83,23 @@ describe('UserRolesPage', () => {
     expect(markup).toContain('Viewer');
     expect(markup).toContain('Save changes');
     expect(markup).toContain('Cancel');
+  });
+
+  it('warns when the available roles selector is truncated by the backend page size', async () => {
+    listRolesMock.mockResolvedValue({
+      status: 'success',
+      data: {
+        rows: [role('role-1', 'admin', 'Administrator')],
+        pagination: { total: 125, limit: 100, offset: 0 },
+        total: 125,
+      },
+    });
+
+    const markup = await renderRolesPage('user-1');
+
+    expect(markup).toContain(
+      'Only the first 1 of 125 roles are available here. Some roles may be missing from this selector.',
+    );
   });
 
   it('renders not-found without the role form', async () => {

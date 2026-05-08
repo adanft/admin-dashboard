@@ -1,20 +1,20 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { UsersListQuery, UsersListState } from '@/lib/api/users';
-import { getSession } from '@/lib/auth/session';
+import type { UsersListQuery, UsersListState } from '@/server/api/users';
+import { getSession } from '@/server/auth/session';
 import UsersPage from './page';
 
 const SEARCH_PLACEHOLDER = ['Search by name', 'username and email'].join(', ');
 
 const listUsersMock = vi.hoisted(() => vi.fn<() => Promise<UsersListState>>());
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   getSession: vi.fn(),
 }));
 
-vi.mock('@/lib/api/users', async () => {
-  const actual = await vi.importActual<typeof import('@/lib/api/users')>('@/lib/api/users');
+vi.mock('@/server/api/users', async () => {
+  const actual = await vi.importActual<typeof import('@/server/api/users')>('@/server/api/users');
 
   return {
     ...actual,

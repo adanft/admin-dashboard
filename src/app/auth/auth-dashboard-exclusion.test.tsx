@@ -8,17 +8,17 @@ vi.mock('next/image', () => ({
   default: ({ alt }: { alt: string; src: string }) => <span aria-label={alt} role="img" />,
 }));
 
-vi.mock('./sign-in/sign-in-form', () => ({
+vi.mock('@/features/auth/components/sign-in-form', () => ({
   default: () => <form aria-label="Sign in form" />,
 }));
 
-vi.mock('./sign-up/sign-up-form', () => ({
+vi.mock('@/features/auth/components/sign-up-form', () => ({
   default: () => <form aria-label="Setup form" />,
 }));
 
 describe('auth pages dashboard exclusion', () => {
-  it('renders sign-in without the authenticated dashboard layout or private navigation', () => {
-    const markup = renderToStaticMarkup(<SignInPage />);
+  it('renders sign-in without the authenticated dashboard layout or private navigation', async () => {
+    const markup = renderToStaticMarkup(await SignInPage());
 
     expect(markup).toContain('Sign In');
     expect(markup).toContain('Sign in form');
@@ -28,6 +28,15 @@ describe('auth pages dashboard exclusion', () => {
     expect(markup).not.toContain('href="/users"');
     expect(markup).not.toContain('href="/roles"');
     expect(markup).not.toContain('href="/audit-logs"');
+  });
+
+  it('renders the password-updated sign-in success message from search params', async () => {
+    const markup = renderToStaticMarkup(
+      await SignInPage({ searchParams: Promise.resolve({ passwordChanged: '1' }) }),
+    );
+
+    expect(markup).toContain('Password updated. Sign in with your new password.');
+    expect(markup).toContain('aria-live="polite"');
   });
 
   it('renders setup without the authenticated dashboard layout or private navigation', () => {

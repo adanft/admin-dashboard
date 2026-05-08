@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 import DashboardBreadcrumbs from './_components/dashboard-breadcrumbs';
 import DashboardNavbar from './_components/dashboard-navbar';
 import DashboardSidebar from './_components/dashboard-sidebar';

@@ -5,7 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
-import { dashboardNavigation, isDashboardNavigationItemActive } from '../_lib/dashboard-navigation';
+import {
+  dashboardNavigation,
+  isDashboardNavigationItemActive,
+} from '../_shell/dashboard-navigation';
 
 export default function DashboardSidebar() {
   const [isExpanded, setIsExpanded] = useState(false);

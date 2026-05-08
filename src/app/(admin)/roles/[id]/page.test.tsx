@@ -2,10 +2,10 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AdminApiError } from '@/lib/api/client';
-import type { PermissionSummary } from '@/lib/api/permissions';
-import type { RoleProfile } from '@/lib/api/roles';
-import { getSession } from '@/lib/auth/session';
+import { AdminApiError } from '@/server/api/client';
+import type { PermissionSummary } from '@/server/api/permissions';
+import type { RoleProfile } from '@/server/api/roles';
+import { getSession } from '@/server/auth/session';
 import RoleDetailPage from './page';
 
 const getRoleMock = vi.hoisted(() => vi.fn<() => Promise<RoleProfile>>());
@@ -22,12 +22,12 @@ vi.mock('react', async (importOriginal) => {
   };
 });
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   getSession: vi.fn(),
 }));
 
-vi.mock('@/lib/api/roles', async () => {
-  const actual = await vi.importActual<typeof import('@/lib/api/roles')>('@/lib/api/roles');
+vi.mock('@/server/api/roles', async () => {
+  const actual = await vi.importActual<typeof import('@/server/api/roles')>('@/server/api/roles');
 
   return {
     ...actual,
@@ -38,19 +38,20 @@ vi.mock('@/lib/api/roles', async () => {
   };
 });
 
-vi.mock('@/lib/api/permissions', async () => {
-  const actual =
-    await vi.importActual<typeof import('@/lib/api/permissions')>('@/lib/api/permissions');
+vi.mock('@/server/api/permissions', async () => {
+  const actual = await vi.importActual<typeof import('@/server/api/permissions')>(
+    '@/server/api/permissions',
+  );
 
   return {
     ...actual,
     permissionsApi: {
-      listPermissions: listPermissionsMock,
+      listPermissionsData: listPermissionsMock,
     },
   };
 });
 
-vi.mock('../_lib/role-actions', () => ({
+vi.mock('@/features/roles/actions/role-actions', () => ({
   deleteRoleAction: vi.fn(),
 }));
 

@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 
-import type { AdminSession } from '@/lib/auth/session-cookie';
+import type { AdminSession } from '@/server/auth/session-cookie';
 import DashboardProfileAction from './dashboard-profile-action';
 import DashboardThemeSwitch from './dashboard-theme-switch';
 

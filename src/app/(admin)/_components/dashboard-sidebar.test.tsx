@@ -27,7 +27,8 @@ describe('DashboardSidebar', () => {
     expect(markup).toContain('href="/roles"');
     expect(markup).toContain('href="/permissions"');
     expect(markup).toContain('href="/audit-logs"');
-    expect(markup).toContain('href="/system/status"');
+    expect(markup).not.toContain('href="/system/status"');
+    expect(markup).not.toContain('System Status');
     expect(markup).not.toContain('/auth/sign-in');
     expect(markup).not.toContain('/auth/sign-up');
   });

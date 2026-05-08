@@ -1,5 +1,5 @@
-import DashboardPageTitle from '../../_components/dashboard-page-title';
+import AccountSessionsPage from '@/features/account/components/account-sessions-page';
 
-export default function AccountSessionsPage() {
-  return <DashboardPageTitle title="My sessions" />;
+export default function Page() {
+  return <AccountSessionsPage />;
 }

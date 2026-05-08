@@ -12,7 +12,7 @@ const mocks = vi.hoisted(() => ({
   }),
 }));
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   getSession: mocks.getSession,
 }));
 
@@ -65,7 +65,7 @@ describe('DashboardLayout', () => {
     expect(markup).toContain('AD');
   });
 
-  it('separates the future admin sections in the authenticated dashboard layout', async () => {
+  it('separates the active admin sections in the authenticated dashboard layout', async () => {
     mocks.getSession.mockResolvedValue({ accessToken: 'token', expiresAt: Date.now() + 60_000 });
 
     const markup = renderToStaticMarkup(await DashboardLayout({ children: <h1>Dashboard</h1> }));
@@ -73,7 +73,7 @@ describe('DashboardLayout', () => {
     expect(markup).toContain('Dashboard');
     expect(markup).toContain('Account');
     expect(markup).toContain('Administration');
-    expect(markup).toContain('Operations');
+    expect(markup).not.toContain('Operations');
     expect(markup).not.toContain('Sign in');
     expect(markup).not.toContain('Register');
   });

@@ -10,13 +10,12 @@ describe('App Router route group ownership', () => {
     expect(existsSync(appPath('page.tsx'))).toBe(false);
   });
 
-  it('keeps account sessions available as an account subsection route', () => {
+  it('keeps current admin subsection routes available', () => {
     expect(existsSync(appPath('(admin)', 'account', 'page.tsx'))).toBe(true);
     expect(existsSync(appPath('(admin)', 'account', 'sessions', 'page.tsx'))).toBe(true);
     expect(existsSync(appPath('(admin)', 'audit-logs', 'page.tsx'))).toBe(true);
     expect(existsSync(appPath('(admin)', 'permissions', 'page.tsx'))).toBe(true);
     expect(existsSync(appPath('(admin)', 'roles', 'page.tsx'))).toBe(true);
-    expect(existsSync(appPath('(admin)', 'system', 'status', 'page.tsx'))).toBe(true);
     expect(existsSync(appPath('(admin)', 'users', 'page.tsx'))).toBe(true);
   });
 
