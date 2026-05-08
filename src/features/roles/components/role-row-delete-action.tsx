@@ -5,7 +5,7 @@ import Modal from '@adanft/ui/modal';
 import { Trash } from 'lucide-react';
 import { startTransition, useActionState, useState } from 'react';
 
-import { deleteRoleAction, type RoleActionState } from '../_lib/role-actions';
+import { deleteRoleAction, type RoleActionState } from '../actions/role-actions';
 
 type RoleRowDeleteActionProps = {
   presentation?: 'icon' | 'text';

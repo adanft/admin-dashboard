@@ -10,7 +10,7 @@ import { useActionState } from 'react';
 
 import type { UserActionState } from '@/features/users/actions/user-actions';
 import { updateUserRolesAction } from '@/features/users/actions/user-actions';
-import type { RoleSummary } from '@/lib/api/roles';
+import type { RoleSummary } from '@/server/api/roles';
 import type { UserRoleSummary } from '@/server/api/users';
 
 type RoleOption = Pick<RoleSummary, 'displayName' | 'id' | 'isSystem' | 'key' | 'status'>;

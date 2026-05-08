@@ -9,7 +9,7 @@ import {
   type RoleStatus,
   rolesApi,
   type UpdateRolePayload,
-} from '@/lib/api/roles';
+} from '@/server/api/roles';
 import { getSession } from '@/server/auth/session';
 
 type RoleActionField = keyof CreateRolePayload | 'status' | 'permissionIds';

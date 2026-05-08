@@ -7,7 +7,7 @@ import {
   requestAuthenticatedGet,
   requestAuthenticatedJson,
 } from '@/lib/api/client';
-import type { RoleStatus } from '@/lib/api/roles';
+import type { RoleStatus } from '@/server/api/roles';
 
 export type UserStatus = 'active' | 'disabled' | 'locked' | 'pending_password_change';
 export type UsersListSort = 'created_at' | 'updated_at' | 'username' | 'email' | 'status';

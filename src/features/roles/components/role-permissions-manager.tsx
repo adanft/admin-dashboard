@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { useActionState } from 'react';
 
 import type { PermissionSummary } from '@/lib/api/permissions';
-import { type RoleActionState, updateRolePermissionsAction } from '../_lib/role-actions';
+import { type RoleActionState, updateRolePermissionsAction } from '../actions/role-actions';
 
 type RolePermissionsManagerProps = {
   assignedPermissions: PermissionSummary[];

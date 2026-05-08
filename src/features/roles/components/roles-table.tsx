@@ -4,7 +4,7 @@ import Table, { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Info, Pencil } from 'lucide-react';
 import Link from 'next/link';
 
-import type { RoleStatus, RolesList } from '@/lib/api/roles';
+import type { RoleStatus, RolesList } from '@/server/api/roles';
 import RoleRowDeleteAction from './role-row-delete-action';
 
 const STATUS_LABELS: Record<RoleStatus, string> = {

@@ -7,8 +7,8 @@ import Select from '@adanft/ui/select';
 import Link from 'next/link';
 import { useActionState } from 'react';
 
-import type { RoleProfile } from '@/lib/api/roles';
-import { createRoleAction, type RoleActionState, updateRoleAction } from '../_lib/role-actions';
+import type { RoleProfile } from '@/server/api/roles';
+import { createRoleAction, type RoleActionState, updateRoleAction } from '../actions/role-actions';
 
 type RoleFormProps =
   | {

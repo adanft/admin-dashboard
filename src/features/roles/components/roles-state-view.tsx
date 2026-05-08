@@ -1,6 +1,6 @@
 import Box from '@adanft/ui/box';
 
-import type { RolesListState } from '@/lib/api/roles';
+import type { RolesListState } from '@/server/api/roles';
 import { RolesPaginationFoot, RolesPaginationHead } from './roles-pagination';
 import RolesTable from './roles-table';
 

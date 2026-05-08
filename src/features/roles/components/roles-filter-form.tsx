@@ -3,7 +3,7 @@ import Button from '@adanft/ui/button';
 import Field from '@adanft/ui/field';
 import Input from '@adanft/ui/input';
 
-import type { RolesListQuery } from '@/lib/api/roles';
+import type { RolesListQuery } from '@/server/api/roles';
 
 export default function RolesFilterForm({ query }: { query: RolesListQuery }) {
   return (

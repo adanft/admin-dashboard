@@ -13,7 +13,7 @@ vi.mock('react', async (importOriginal) => {
   };
 });
 
-vi.mock('../_lib/role-actions', () => ({
+vi.mock('../actions/role-actions', () => ({
   updateRolePermissionsAction: vi.fn(),
 }));
 

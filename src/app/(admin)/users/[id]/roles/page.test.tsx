@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AdminApiError } from '@/lib/api/client';
-import type { RoleSummary, RolesListState } from '@/lib/api/roles';
+import type { RoleSummary, RolesListState } from '@/server/api/roles';
 import type { UserProfile } from '@/server/api/users';
 import { getSession } from '@/server/auth/session';
 import UserRolesPage from './page';
@@ -34,8 +34,8 @@ vi.mock('@/server/api/users', async () => {
   };
 });
 
-vi.mock('@/lib/api/roles', async () => {
-  const actual = await vi.importActual<typeof import('@/lib/api/roles')>('@/lib/api/roles');
+vi.mock('@/server/api/roles', async () => {
+  const actual = await vi.importActual<typeof import('@/server/api/roles')>('@/server/api/roles');
 
   return {
     ...actual,
