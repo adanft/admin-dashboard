@@ -4,7 +4,7 @@ import {
   type AuditLogsListQuery,
   type AuditLogsListState,
   filterAuditLogsForCurrentPage,
-} from '@/lib/api/audit-logs';
+} from '@/server/api/audit-logs';
 import { AuditLogsPaginationFoot, AuditLogsPaginationHead } from './audit-logs-pagination';
 import AuditLogsTable from './audit-logs-table';
 

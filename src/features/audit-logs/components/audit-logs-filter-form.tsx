@@ -3,7 +3,7 @@ import Button from '@adanft/ui/button';
 import Field from '@adanft/ui/field';
 import Input from '@adanft/ui/input';
 
-import type { AuditLogsListQuery } from '@/lib/api/audit-logs';
+import type { AuditLogsListQuery } from '@/server/api/audit-logs';
 
 export default function AuditLogsFilterForm({ query }: { query: AuditLogsListQuery }) {
   return (

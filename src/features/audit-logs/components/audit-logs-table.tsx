@@ -1,7 +1,7 @@
 import Badge from '@adanft/ui/badge';
 import Table, { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@adanft/ui/table';
 
-import type { AuditLogsList } from '@/lib/api/audit-logs';
+import type { AuditLogsList } from '@/server/api/audit-logs';
 import AuditLogDetailsModal from './audit-log-details-modal';
 
 const RESULT_BADGE_VARIANTS: Record<

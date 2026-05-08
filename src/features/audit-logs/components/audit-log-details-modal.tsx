@@ -5,7 +5,7 @@ import Modal from '@adanft/ui/modal';
 import { Info, X } from 'lucide-react';
 import { useId, useState } from 'react';
 
-import type { AuditLogEvent } from '@/lib/api/audit-logs';
+import type { AuditLogEvent } from '@/server/api/audit-logs';
 
 export default function AuditLogDetailsModal({ event }: { event: AuditLogEvent }) {
   const [isOpen, setIsOpen] = useState(false);

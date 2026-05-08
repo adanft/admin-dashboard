@@ -2,9 +2,9 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { AuditLogsListQuery, AuditLogsListState } from '@/lib/api/audit-logs';
+import { AuditLogDetailsContent } from '@/features/audit-logs/components/audit-log-details-modal';
+import type { AuditLogsListQuery, AuditLogsListState } from '@/server/api/audit-logs';
 import { getSession } from '@/server/auth/session';
-import { AuditLogDetailsContent } from './_components/audit-log-details-modal';
 import AuditLogsPage from './page';
 
 const listAuditLogsMock = vi.hoisted(() => vi.fn<() => Promise<AuditLogsListState>>());
@@ -13,9 +13,9 @@ vi.mock('@/server/auth/session', () => ({
   getSession: vi.fn(),
 }));
 
-vi.mock('@/lib/api/audit-logs', async () => {
+vi.mock('@/server/api/audit-logs', async () => {
   const actual =
-    await vi.importActual<typeof import('@/lib/api/audit-logs')>('@/lib/api/audit-logs');
+    await vi.importActual<typeof import('@/server/api/audit-logs')>('@/server/api/audit-logs');
 
   return {
     ...actual,
