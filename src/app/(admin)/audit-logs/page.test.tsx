@@ -265,8 +265,8 @@ describe('AuditLogsPage', () => {
 
     expect(listAuditLogsMock).toHaveBeenCalledWith('admin-token', {
       search: 'admin',
-      from: '2026-05-01T00:00:00Z',
-      to: '2026-05-07T00:00:00Z',
+      from: '2026-05-01T00:00:00.000Z',
+      to: '2026-05-07T00:00:00.000Z',
       limit: 25,
       offset: 50,
     } satisfies AuditLogsListQuery);
@@ -336,6 +336,14 @@ describe('AuditLogsPage', () => {
     const markup = await renderAuditLogsPage();
 
     expect(markup).toContain('Your session expired or is invalid.');
+    expect(listAuditLogsMock).not.toHaveBeenCalled();
+  });
+
+  it('renders invalid date filter feedback without calling the API', async () => {
+    const markup = await renderAuditLogsPage({ from: 'not-a-date', to: '2026-05-07' });
+
+    expect(markup).toContain('Enter valid from and to dates before applying filters.');
+    expect(markup).toContain('role="alert"');
     expect(listAuditLogsMock).not.toHaveBeenCalled();
   });
 });

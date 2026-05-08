@@ -111,6 +111,7 @@ export async function updateUserRolesAction(
     return { status: 'error', message: EXPIRED_SESSION_MESSAGE };
   }
 
+  // Frontend mitigation only: true all-or-nothing role sync needs a backend atomic endpoint.
   let changedRoles = false;
 
   try {

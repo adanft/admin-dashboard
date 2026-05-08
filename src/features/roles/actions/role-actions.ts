@@ -135,6 +135,7 @@ export async function updateRolePermissionsAction(
     return { status: 'error', message: EXPIRED_SESSION_MESSAGE } as const;
   }
 
+  // Frontend mitigation only: true all-or-nothing permission sync needs a backend atomic endpoint.
   let changedPermissions = false;
 
   try {

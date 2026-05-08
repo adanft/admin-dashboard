@@ -18,6 +18,8 @@ export type AdminSessionUser = {
   username: string;
 };
 
+// Threat model note: this cookie is integrity-protected, not encrypted. Keep it httpOnly/secure
+// at every write site and avoid adding client-readable mirrors of the access token.
 export function encodeAdminSession(session: AdminSession) {
   const secret = getSessionSecret();
 

@@ -173,6 +173,36 @@ describe('normalizeAuditLogsListQuery', () => {
       offset: 0,
     });
   });
+
+  it('normalizes date-only and datetime range filters before backend use', () => {
+    expect(
+      normalizeAuditLogsListQuery({
+        from: ' 2026-05-01 ',
+        to: '2026-05-07T10:30:00Z',
+      }),
+    ).toEqual({
+      from: '2026-05-01T00:00:00.000Z',
+      to: '2026-05-07T10:30:00.000Z',
+      limit: 50,
+      offset: 0,
+    });
+  });
+
+  it('marks invalid date filters locally instead of preserving backend-bound values', () => {
+    expect(normalizeAuditLogsListQuery({ from: 'not-a-date', to: '2026-05-07' })).toEqual({
+      limit: 50,
+      offset: 0,
+      filterError: 'Enter valid from and to dates before applying filters.',
+    });
+  });
+
+  it('marks reversed date ranges locally instead of sending them to the backend', () => {
+    expect(normalizeAuditLogsListQuery({ from: '2026-05-08', to: '2026-05-07' })).toEqual({
+      limit: 50,
+      offset: 0,
+      filterError: 'From must be earlier than or equal to To.',
+    });
+  });
 });
 
 describe('filterAuditLogsForCurrentPage', () => {

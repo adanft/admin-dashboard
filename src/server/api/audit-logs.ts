@@ -5,6 +5,7 @@ import { isAdminApiError, requestAuthenticatedGet } from '@/server/api/client';
 export type AuditLogsListLimit = 10 | 25 | 50 | 100;
 
 export type AuditLogsListQuery = {
+  filterError?: string;
   search?: string;
   from?: string;
   to?: string;
@@ -59,19 +60,24 @@ export type AuditLogsLocalFilters = Pick<AuditLogsListQuery, 'search'>;
 
 const DEFAULT_QUERY: AuditLogsListQuery = { limit: 50, offset: 0 };
 const AUDIT_LOGS_LIST_LIMITS = [10, 25, 50, 100] as const;
+const INVALID_DATE_FILTER_MESSAGE = 'Enter valid from and to dates before applying filters.';
+const INVALID_DATE_RANGE_MESSAGE = 'From must be earlier than or equal to To.';
+const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 export function normalizeAuditLogsListQuery(params: AuditLogsListSearchParams): AuditLogsListQuery {
   const search = firstParam(params.search)?.trim();
-  const from = firstParam(params.from)?.trim();
-  const to = firstParam(params.to)?.trim();
+  const from = parseAuditLogDateFilter(firstParam(params.from)?.trim());
+  const to = parseAuditLogDateFilter(firstParam(params.to)?.trim());
   const limit =
     parseNumberOption(firstParam(params.limit), AUDIT_LOGS_LIST_LIMITS) ?? DEFAULT_QUERY.limit;
   const offset = parseOffset(firstParam(params.offset));
+  const filterError = resolveAuditLogDateFilterError(from, to);
 
   return {
     ...(search ? { search } : {}),
-    ...(from ? { from } : {}),
-    ...(to ? { to } : {}),
+    ...(!filterError && from.status === 'valid' ? { from: from.value } : {}),
+    ...(!filterError && to.status === 'valid' ? { to: to.value } : {}),
+    ...(filterError ? { filterError } : {}),
     limit,
     offset,
   };
@@ -216,6 +222,59 @@ function parseNumberOption<const TOption extends number>(
 function parseOffset(value: string | undefined) {
   const numericValue = value ? Number(value) : DEFAULT_QUERY.offset;
   return Number.isInteger(numericValue) && numericValue >= 0 ? numericValue : DEFAULT_QUERY.offset;
+}
+
+type ParsedAuditLogDateFilter =
+  | { status: 'empty' }
+  | { status: 'invalid' }
+  | { status: 'valid'; timestamp: number; value: string };
+
+function parseAuditLogDateFilter(value: string | undefined): ParsedAuditLogDateFilter {
+  if (!value) {
+    return { status: 'empty' };
+  }
+
+  const timestamp = DATE_ONLY_PATTERN.test(value) ? parseDateOnlyFilter(value) : Date.parse(value);
+
+  if (Number.isNaN(timestamp)) {
+    return { status: 'invalid' };
+  }
+
+  return { status: 'valid', timestamp, value: new Date(timestamp).toISOString() };
+}
+
+function parseDateOnlyFilter(value: string) {
+  const [yearValue, monthValue, dayValue] = value.split('-');
+  const year = Number(yearValue);
+  const month = Number(monthValue);
+  const day = Number(dayValue);
+  const timestamp = Date.UTC(year, month - 1, day);
+  const parsedDate = new Date(timestamp);
+
+  if (
+    parsedDate.getUTCFullYear() !== year ||
+    parsedDate.getUTCMonth() !== month - 1 ||
+    parsedDate.getUTCDate() !== day
+  ) {
+    return Number.NaN;
+  }
+
+  return timestamp;
+}
+
+function resolveAuditLogDateFilterError(
+  from: ParsedAuditLogDateFilter,
+  to: ParsedAuditLogDateFilter,
+) {
+  if (from.status === 'invalid' || to.status === 'invalid') {
+    return INVALID_DATE_FILTER_MESSAGE;
+  }
+
+  if (from.status === 'valid' && to.status === 'valid' && from.timestamp > to.timestamp) {
+    return INVALID_DATE_RANGE_MESSAGE;
+  }
+
+  return null;
 }
 
 function buildAuditLogSearchText(event: AuditLogEvent) {
