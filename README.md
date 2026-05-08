@@ -76,7 +76,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 | `pnpm format` | Format files with Biome. |
 | `pnpm format:check` | Check formatting without writing files. |
 | `pnpm typecheck` | Run TypeScript without emitting files. |
-| `pnpm check` | Run Biome CI checks and TypeScript checks. |
+| `pnpm check` | Run Biome CI checks, TypeScript checks, and the Vitest suite. |
 | `pnpm ci` | Run all CI validation locally, including the production build. |
 
 ## Code quality
@@ -111,7 +111,8 @@ GitHub Actions runs on pushes and pull requests targeting `main`:
 1. install dependencies with pnpm and the frozen lockfile
 2. run Biome in CI mode
 3. run TypeScript checks
-4. build the application
+4. run the Vitest suite
+5. build the application
 
 ## License
 
