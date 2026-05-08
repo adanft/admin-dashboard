@@ -10,7 +10,7 @@ const mocks = vi.hoisted(() => ({
   }),
 }));
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   getRequiredPasswordChangeSession: mocks.getRequiredPasswordChangeSession,
 }));
 
@@ -18,7 +18,7 @@ vi.mock('next/navigation', () => ({
   redirect: mocks.redirect,
 }));
 
-vi.mock('./change-password-form', () => ({
+vi.mock('@/features/auth/components/change-password-form', () => ({
   default: () => <form aria-label="Required password change form" />,
 }));
 

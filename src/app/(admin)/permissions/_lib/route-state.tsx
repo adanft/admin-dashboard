@@ -2,7 +2,7 @@ import Box from '@adanft/ui/box';
 
 import { isAdminApiError } from '@/lib/api/client';
 import { type PermissionProfile, permissionsApi } from '@/lib/api/permissions';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 
 export type PermissionRouteState =
   | { status: 'success'; permission: PermissionProfile }

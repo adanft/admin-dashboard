@@ -7,7 +7,7 @@ import AuditLogsPage from './audit-logs/page';
 import DashboardPage from './page';
 import PermissionsPage from './permissions/page';
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   getSession: vi.fn().mockResolvedValue(null),
 }));
 

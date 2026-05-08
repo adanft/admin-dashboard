@@ -6,8 +6,8 @@ import Input from '@adanft/ui/input';
 import Link from 'next/link';
 import { useActionState } from 'react';
 
-import type { AuthActionState } from '@/lib/auth/types';
-import { signInAction } from './actions';
+import { signInAction } from '@/features/auth/actions/sign-in-action';
+import type { AuthActionState } from '@/server/auth/types';
 
 const initialState: AuthActionState = {};
 

@@ -33,7 +33,7 @@ vi.mock('@/lib/api/auth', () => ({
   isAdminApiError: (error: unknown) => error instanceof MockAdminApiError,
 }));
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   clearRefreshCookie: mocks.clearRefreshCookie,
   clearSession: mocks.clearSession,
   getSession: mocks.getSession,

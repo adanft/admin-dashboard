@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { ChangePasswordPayload } from '@/lib/api/auth';
 import { authApi, isAdminApiError } from '@/lib/api/auth';
-import { clearRefreshCookie, clearSession, getSession } from '@/lib/auth/session';
+import { clearRefreshCookie, clearSession, getSession } from '@/server/auth/session';
 
 type ChangePasswordField = keyof ChangePasswordPayload;
 

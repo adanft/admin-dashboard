@@ -6,7 +6,7 @@ import { LogOut } from 'lucide-react';
 import { cookies } from 'next/headers';
 
 import { type AuthSession, type AuthSessionsState, authApi } from '@/lib/api/auth';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 import { revokeSessionAction } from './_lib/session-actions';
 
 export default async function AccountSessionsPage() {

@@ -2,7 +2,7 @@ import 'server-only';
 
 import { cookies } from 'next/headers';
 
-import type { AuthSessionData } from '@/lib/auth/types';
+import type { AuthSessionData } from '@/server/auth/types';
 import {
   ADMIN_SESSION_COOKIE,
   type AdminSession,

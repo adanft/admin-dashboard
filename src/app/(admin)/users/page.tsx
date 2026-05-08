@@ -8,7 +8,7 @@ import {
   type UsersListState,
   usersApi,
 } from '@/lib/api/users';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 import UsersFilterForm from './_components/users-filter-form';
 import UsersStateView from './_components/users-state-view';
 

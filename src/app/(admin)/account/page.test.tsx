@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { CurrentAccountState } from '@/lib/api/auth';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 import AccountPage from './page';
 
 const getCurrentAccountMock = vi.hoisted(() => vi.fn<() => Promise<CurrentAccountState>>());
@@ -16,7 +16,7 @@ vi.mock('react', async () => {
   };
 });
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   getSession: vi.fn(),
 }));
 

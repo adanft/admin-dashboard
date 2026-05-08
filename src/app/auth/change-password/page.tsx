@@ -1,8 +1,8 @@
 import Box from '@adanft/ui/box';
 import { redirect } from 'next/navigation';
 
-import { getRequiredPasswordChangeSession } from '@/lib/auth/session';
-import RequiredPasswordChangeForm from './change-password-form';
+import RequiredPasswordChangeForm from '@/features/auth/components/change-password-form';
+import { getRequiredPasswordChangeSession } from '@/server/auth/session';
 
 export default async function RequiredPasswordChangePage() {
   const session = await getRequiredPasswordChangeSession();

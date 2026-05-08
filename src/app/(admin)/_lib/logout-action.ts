@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { authApi } from '@/lib/api/client';
-import { clearRefreshCookie, clearSession } from '@/lib/auth/session';
+import { clearRefreshCookie, clearSession } from '@/server/auth/session';
 
 export async function logoutAction() {
   const refreshToken = (await cookies()).get('refresh_token')?.value;

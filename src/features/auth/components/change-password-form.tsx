@@ -5,7 +5,10 @@ import Field from '@adanft/ui/field';
 import Input from '@adanft/ui/input';
 import { useActionState } from 'react';
 
-import { type RequiredPasswordChangeState, requiredPasswordChangeAction } from './actions';
+import {
+  type RequiredPasswordChangeState,
+  requiredPasswordChangeAction,
+} from '@/features/auth/actions/change-password-action';
 
 const initialState: RequiredPasswordChangeState = {};
 

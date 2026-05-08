@@ -10,8 +10,8 @@ import {
   persistRefreshCookie,
   setRequiredPasswordChangeSessionFromAuthData,
   setSessionFromAuthData,
-} from '@/lib/auth/session';
-import type { AuthActionState, LoginPayload } from '@/lib/auth/types';
+} from '@/server/auth/session';
+import type { AuthActionState, LoginPayload } from '@/server/auth/types';
 
 const INVALID_SIGN_IN_MESSAGE = 'Invalid username or password.';
 

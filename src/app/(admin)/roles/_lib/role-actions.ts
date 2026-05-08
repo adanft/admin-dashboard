@@ -10,7 +10,7 @@ import {
   rolesApi,
   type UpdateRolePayload,
 } from '@/lib/api/roles';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 
 type RoleActionField = keyof CreateRolePayload | 'status' | 'permissionIds';
 

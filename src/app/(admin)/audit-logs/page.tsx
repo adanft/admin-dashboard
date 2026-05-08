@@ -3,7 +3,7 @@ import {
   auditLogsApi,
   normalizeAuditLogsListQuery,
 } from '@/lib/api/audit-logs';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 import AuditLogsFilterForm from './_components/audit-logs-filter-form';
 import AuditLogsStateView from './_components/audit-logs-state-view';
 

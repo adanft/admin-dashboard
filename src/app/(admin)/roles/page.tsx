@@ -3,7 +3,7 @@ import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
 import { normalizeRolesListQuery, type RolesListSearchParams, rolesApi } from '@/lib/api/roles';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 import RolesFilterForm from './_components/roles-filter-form';
 import RolesStateView from './_components/roles-state-view';
 

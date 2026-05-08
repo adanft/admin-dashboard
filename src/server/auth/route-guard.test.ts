@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ADMIN_SESSION_COOKIE, encodeAdminSession } from '@/lib/auth/session-cookie';
+import { ADMIN_SESSION_COOKIE, encodeAdminSession } from '@/server/auth/session-cookie';
 import { getAuthRedirectDecision } from './route-guard';
 
 describe('auth route guard', () => {

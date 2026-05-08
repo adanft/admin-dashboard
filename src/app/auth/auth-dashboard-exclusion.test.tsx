@@ -8,11 +8,11 @@ vi.mock('next/image', () => ({
   default: ({ alt }: { alt: string; src: string }) => <span aria-label={alt} role="img" />,
 }));
 
-vi.mock('./sign-in/sign-in-form', () => ({
+vi.mock('@/features/auth/components/sign-in-form', () => ({
   default: () => <form aria-label="Sign in form" />,
 }));
 
-vi.mock('./sign-up/sign-up-form', () => ({
+vi.mock('@/features/auth/components/sign-up-form', () => ({
   default: () => <form aria-label="Setup form" />,
 }));
 

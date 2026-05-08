@@ -9,7 +9,7 @@ import {
   clearRequiredPasswordChangeSession,
   clearSession,
   getRequiredPasswordChangeSession,
-} from '@/lib/auth/session';
+} from '@/server/auth/session';
 
 type ChangePasswordField = keyof ChangePasswordPayload;
 

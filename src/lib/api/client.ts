@@ -6,7 +6,7 @@ import type {
   BackendEnvelope,
   LoginPayload,
   RegisterPayload,
-} from '@/lib/auth/types';
+} from '@/server/auth/types';
 
 type RequestOptions<TPayload> = {
   path: string;

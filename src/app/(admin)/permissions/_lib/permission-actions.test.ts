@@ -33,7 +33,7 @@ vi.mock('@/lib/api/permissions', () => ({
   permissionsApi: mocks.permissionsApi,
 }));
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   getSession: mocks.getSession,
 }));
 

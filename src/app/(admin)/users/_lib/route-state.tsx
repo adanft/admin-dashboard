@@ -4,7 +4,7 @@ import { isAdminApiError } from '@/lib/api/client';
 import { type RoleSummary, rolesApi } from '@/lib/api/roles';
 import type { UserProfile } from '@/lib/api/users';
 import { usersApi } from '@/lib/api/users';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 
 export type UserRouteState =
   | { status: 'success'; user: UserProfile }

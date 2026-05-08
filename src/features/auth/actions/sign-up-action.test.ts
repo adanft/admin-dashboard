@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { signUpAction } from './actions';
+import { signUpAction } from './sign-up-action';
 
 const mocks = vi.hoisted(() => ({
   authApi: {
@@ -17,7 +17,7 @@ vi.mock('@/lib/api/client', () => ({
   authApi: mocks.authApi,
 }));
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   persistRefreshCookie: mocks.persistRefreshCookie,
   setSessionFromAuthData: mocks.setSessionFromAuthData,
 }));

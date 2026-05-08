@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 
 import { isAdminApiError } from '@/lib/api/client';
 import { type CreateUserPayload, type UserProfilePayload, usersApi } from '@/lib/api/users';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 
 type UserActionField = keyof CreateUserPayload;
 

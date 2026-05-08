@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AdminApiError } from '@/lib/api/client';
 import type { RoleProfile } from '@/lib/api/roles';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 import EditRolePage from './page';
 
 const getRoleMock = vi.hoisted(() => vi.fn<() => Promise<RoleProfile>>());
@@ -19,7 +19,7 @@ vi.mock('react', async (importOriginal) => {
   };
 });
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   getSession: vi.fn(),
 }));
 

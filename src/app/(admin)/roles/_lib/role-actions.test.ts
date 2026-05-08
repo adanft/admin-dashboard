@@ -42,7 +42,7 @@ vi.mock('@/lib/api/roles', () => ({
   rolesApi: mocks.rolesApi,
 }));
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   getSession: mocks.getSession,
 }));
 

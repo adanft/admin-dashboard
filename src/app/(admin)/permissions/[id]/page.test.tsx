@@ -4,12 +4,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AdminApiError } from '@/lib/api/client';
 import type { PermissionProfile } from '@/lib/api/permissions';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 import PermissionDetailPage from './page';
 
 const getPermissionMock = vi.hoisted(() => vi.fn<() => Promise<PermissionProfile>>());
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   getSession: vi.fn(),
 }));
 

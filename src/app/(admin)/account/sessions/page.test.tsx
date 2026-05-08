@@ -2,13 +2,13 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { AuthSessionsState } from '@/lib/api/auth';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 import AccountSessionsPage from './page';
 
 const getSessionsMock = vi.hoisted(() => vi.fn<() => Promise<AuthSessionsState>>());
 const cookieGetMock = vi.hoisted(() => vi.fn(() => ({ value: 'refresh-token' })));
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   getSession: vi.fn(),
 }));
 

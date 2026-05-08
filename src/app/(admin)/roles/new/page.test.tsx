@@ -2,7 +2,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 import NewRolePage from './page';
 
 vi.mock('react', async (importOriginal) => {
@@ -13,7 +13,7 @@ vi.mock('react', async (importOriginal) => {
   };
 });
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   getSession: vi.fn(),
 }));
 

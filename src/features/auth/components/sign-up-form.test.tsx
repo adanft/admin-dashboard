@@ -11,7 +11,7 @@ vi.mock('react', async (importOriginal) => {
   };
 });
 
-vi.mock('./actions', () => ({
+vi.mock('@/features/auth/actions/sign-up-action', () => ({
   signUpAction: vi.fn(),
 }));
 

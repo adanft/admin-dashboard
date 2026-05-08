@@ -2,10 +2,10 @@
 
 import { redirect } from 'next/navigation';
 
+import { getSignUpErrorMessage } from '@/features/auth/actions/error-mapping';
 import { authApi } from '@/lib/api/client';
-import { getSignUpErrorMessage } from '@/lib/auth/error-mapping';
-import { persistRefreshCookie, setSessionFromAuthData } from '@/lib/auth/session';
-import type { AuthActionState, RegisterPayload } from '@/lib/auth/types';
+import { persistRefreshCookie, setSessionFromAuthData } from '@/server/auth/session';
+import type { AuthActionState, RegisterPayload } from '@/server/auth/types';
 
 export async function signUpAction(
   _previousState: AuthActionState,

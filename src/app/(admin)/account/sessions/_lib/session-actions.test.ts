@@ -22,7 +22,7 @@ vi.mock('@/lib/api/auth', () => ({
   },
 }));
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   clearRefreshCookie: mocks.clearRefreshCookie,
   clearSession: mocks.clearSession,
   getSession: mocks.getSession,

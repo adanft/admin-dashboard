@@ -1,7 +1,7 @@
 import Box from '@adanft/ui/box';
 import Image from 'next/image';
 
-import SignInForm from './sign-in-form';
+import SignInForm from '@/features/auth/components/sign-in-form';
 
 type SignInPageProps = {
   searchParams?: Promise<{ passwordChanged?: string | string[] }>;

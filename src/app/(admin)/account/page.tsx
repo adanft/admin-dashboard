@@ -9,7 +9,7 @@ import {
   type CurrentAccountState,
   type CurrentActor,
 } from '@/lib/api/auth';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 import ChangePasswordForm from './_components/change-password-form';
 import LogoutAllSessionsForm from './_components/logout-all-sessions-form';
 

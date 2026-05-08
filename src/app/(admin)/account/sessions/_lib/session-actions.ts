@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { authApi } from '@/lib/api/auth';
-import { clearRefreshCookie, clearSession, getSession } from '@/lib/auth/session';
+import { clearRefreshCookie, clearSession, getSession } from '@/server/auth/session';
 
 export async function revokeSessionAction(formData: FormData): Promise<void> {
   const sessionId = readRequiredText(formData, 'sessionId');

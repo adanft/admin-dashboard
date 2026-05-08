@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 
 import { isAdminApiError } from '@/lib/api/client';
 import { permissionsApi, type UpdatePermissionPayload } from '@/lib/api/permissions';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 
 type PermissionActionField = keyof UpdatePermissionPayload;
 

@@ -3,7 +3,7 @@ import Box from '@adanft/ui/box';
 import { isAdminApiError } from '@/lib/api/client';
 import { type PermissionSummary, permissionsApi } from '@/lib/api/permissions';
 import { type RoleProfile, rolesApi } from '@/lib/api/roles';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 
 export type RoleRouteState =
   | {

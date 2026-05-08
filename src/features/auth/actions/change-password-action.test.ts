@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { requiredPasswordChangeAction } from './actions';
+import { requiredPasswordChangeAction } from './change-password-action';
 
 const mocks = vi.hoisted(() => {
   class MockAdminApiError extends Error {
@@ -32,7 +32,7 @@ vi.mock('@/lib/api/auth', () => ({
   isAdminApiError: (error: unknown) => error instanceof mocks.MockAdminApiError,
 }));
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   clearRefreshCookie: mocks.clearRefreshCookie,
   clearRequiredPasswordChangeSession: mocks.clearRequiredPasswordChangeSession,
   clearSession: mocks.clearSession,

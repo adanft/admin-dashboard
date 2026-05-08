@@ -3,7 +3,7 @@ import {
   type PermissionsListSearchParams,
   permissionsApi,
 } from '@/lib/api/permissions';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 import PermissionsFilterForm from './_components/permissions-filter-form';
 import PermissionsStateView from './_components/permissions-state-view';
 

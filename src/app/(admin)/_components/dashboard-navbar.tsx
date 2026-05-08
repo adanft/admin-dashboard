@@ -1,4 +1,4 @@
-import type { AdminSession } from '@/lib/auth/session-cookie';
+import type { AdminSession } from '@/server/auth/session-cookie';
 import DashboardNavbarActions from './dashboard-navbar-actions';
 
 type DashboardNavbarProps = {

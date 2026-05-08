@@ -3,12 +3,12 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { RolesListQuery, RolesListState } from '@/lib/api/roles';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/server/auth/session';
 import RolesPage from './page';
 
 const listRolesMock = vi.hoisted(() => vi.fn<() => Promise<RolesListState>>());
 
-vi.mock('@/lib/auth/session', () => ({
+vi.mock('@/server/auth/session', () => ({
   getSession: vi.fn(),
 }));
 

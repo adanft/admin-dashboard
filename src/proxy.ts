@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { getAuthRedirectDecision } from '@/lib/auth/route-guard';
-import { ADMIN_SESSION_COOKIE } from '@/lib/auth/session-cookie';
+import { getAuthRedirectDecision } from '@/server/auth/route-guard';
+import { ADMIN_SESSION_COOKIE } from '@/server/auth/session-cookie';
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
