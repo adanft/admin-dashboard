@@ -2,11 +2,14 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import type { ChangePasswordPayload } from '@/server/api/account';
-import { accountApi, isAdminApiError } from '@/server/api/account';
+import {
+  CHANGE_PASSWORD_VALIDATION_MESSAGE,
+  type ChangePasswordField,
+  getChangePasswordErrorMessage,
+  readChangePasswordPayload,
+} from '@/features/auth/actions/change-password-core';
+import { accountApi } from '@/server/api/account';
 import { clearRefreshCookie, clearSession, getSession } from '@/server/auth/session';
-
-type ChangePasswordField = keyof ChangePasswordPayload;
 
 export type AccountActionState = {
   status?: 'error' | 'success';
@@ -15,8 +18,6 @@ export type AccountActionState = {
 };
 
 const EXPIRED_SESSION_MESSAGE = 'Your session expired. Please sign in again.';
-const BAD_REQUEST_PASSWORD_MESSAGE =
-  'We could not update your password. Check that your current password is correct and that the new password meets the password policy.';
 
 export async function changePasswordAction(
   _previousState: AccountActionState,
@@ -27,7 +28,7 @@ export async function changePasswordAction(
   if (!payload.success) {
     return {
       status: 'error',
-      message: 'Review the highlighted fields and try again.',
+      message: CHANGE_PASSWORD_VALIDATION_MESSAGE,
       fieldErrors: payload.fieldErrors,
     };
   }
@@ -45,7 +46,10 @@ export async function changePasswordAction(
       message: 'Password updated. Already-issued access tokens expire naturally.',
     };
   } catch (error) {
-    return { status: 'error', message: getChangePasswordErrorMessage(error) };
+    return {
+      status: 'error',
+      message: getChangePasswordErrorMessage(error, { expiredSession: EXPIRED_SESSION_MESSAGE }),
+    };
   }
 }
 
@@ -78,47 +82,4 @@ export async function logoutAllSessionsAction(
 async function readSessionToken() {
   const session = await getSession();
   return session?.accessToken || null;
-}
-
-function readChangePasswordPayload(
-  formData: FormData,
-):
-  | { success: true; payload: ChangePasswordPayload }
-  | { success: false; fieldErrors: Partial<Record<ChangePasswordField, string>> } {
-  // biome-ignore lint/nursery/noSecrets: This is a public form field name, not a secret value.
-  const currentPassword = readRequiredText(formData, 'currentPassword');
-  const newPassword = readRequiredText(formData, 'newPassword');
-
-  if (currentPassword && newPassword) {
-    return { success: true, payload: { currentPassword, newPassword } };
-  }
-
-  return {
-    success: false,
-    fieldErrors: {
-      ...(currentPassword ? {} : { currentPassword: 'Current password is required.' }),
-      ...(newPassword ? {} : { newPassword: 'New password is required.' }),
-    },
-  };
-}
-
-function getChangePasswordErrorMessage(error: unknown) {
-  if (!isAdminApiError(error)) {
-    return 'Unable to update your password right now.';
-  }
-
-  if (error.status === 401) {
-    return EXPIRED_SESSION_MESSAGE;
-  }
-
-  if (error.status === 400) {
-    return BAD_REQUEST_PASSWORD_MESSAGE;
-  }
-
-  return 'Unable to update your password right now.';
-}
-
-function readRequiredText(formData: FormData, key: ChangePasswordField) {
-  const value = formData.get(key);
-  return typeof value === 'string' && value.trim() ? value.trim() : null;
 }
