@@ -12,6 +12,8 @@ import {
 } from '@/server/api/roles';
 import { getSession } from '@/server/auth/session';
 
+import { diffSelectedIds } from '../../relationship-diff';
+
 type RoleActionField = keyof CreateRolePayload | 'status' | 'permissionIds';
 
 export type RoleActionValues = Partial<CreateRolePayload & { status: RoleStatus }>;
@@ -139,14 +141,8 @@ export async function updateRolePermissionsAction(
   let changedPermissions = false;
 
   try {
-    const currentPermissionIdSet = new Set(currentPermissionIds);
-    const selectedPermissionIdSet = new Set(selectedPermissionIds);
-    const permissionIdsToAssign = selectedPermissionIds.filter(
-      (permissionId) => !currentPermissionIdSet.has(permissionId),
-    );
-    const permissionIdsToRemove = currentPermissionIds.filter(
-      (permissionId) => !selectedPermissionIdSet.has(permissionId),
-    );
+    const { idsToAssign: permissionIdsToAssign, idsToRemove: permissionIdsToRemove } =
+      diffSelectedIds(currentPermissionIds, selectedPermissionIds);
 
     if (permissionIdsToAssign.length > 0) {
       await rolesApi.assignPermissions(roleId, permissionIdsToAssign, token);

@@ -7,6 +7,8 @@ import { isAdminApiError } from '@/server/api/client';
 import { type CreateUserPayload, type UserProfilePayload, usersApi } from '@/server/api/users';
 import { getSession } from '@/server/auth/session';
 
+import { diffSelectedIds } from '../../relationship-diff';
+
 type UserActionField = keyof CreateUserPayload;
 
 export type UserActionValues = Partial<UserProfilePayload>;
@@ -115,10 +117,10 @@ export async function updateUserRolesAction(
   let changedRoles = false;
 
   try {
-    const currentRoleIdSet = new Set(currentRoleIds);
-    const selectedRoleIdSet = new Set(selectedRoleIds);
-    const roleIdsToAssign = selectedRoleIds.filter((roleId) => !currentRoleIdSet.has(roleId));
-    const roleIdsToRemove = currentRoleIds.filter((roleId) => !selectedRoleIdSet.has(roleId));
+    const { idsToAssign: roleIdsToAssign, idsToRemove: roleIdsToRemove } = diffSelectedIds(
+      currentRoleIds,
+      selectedRoleIds,
+    );
 
     if (roleIdsToAssign.length > 0) {
       await usersApi.assignRoles(userId, roleIdsToAssign, token);
