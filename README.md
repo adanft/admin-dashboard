@@ -58,9 +58,13 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 - Session-backed admin authentication with HttpOnly cookie storage and logout support.
 - Dashboard shell with sidebar navigation, top navbar, profile action, and contextual breadcrumbs.
+- Required password-change flow for users who must rotate credentials before dashboard access.
+- My Account profile view with password update support.
+- My Sessions management with current-session awareness, session revocation, and logout-all support.
 - Users management with list, search, pagination, create, detail, edit, delete, and role assignment flows.
 - Roles management with list, search, pagination, create, detail, edit, delete, and permission assignment flows.
-- Permission assignment uses bulk API contracts for role and user updates.
+- Permissions management with list, search, pagination, detail, and edit flows.
+- Audit Logs management with bounded filters, raw metadata display, pagination, and fidelity-first rendering.
 
 ## Scripts
 
