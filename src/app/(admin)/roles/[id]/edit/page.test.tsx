@@ -35,7 +35,7 @@ vi.mock('@/server/api/roles', async () => {
   };
 });
 
-vi.mock('@/lib/api/permissions', () => ({
+vi.mock('@/server/api/permissions', () => ({
   permissionsApi: { listPermissions: listPermissionsMock },
 }));
 

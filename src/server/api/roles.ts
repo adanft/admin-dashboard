@@ -7,7 +7,7 @@ import {
   requestAuthenticatedGet,
   requestAuthenticatedJson,
 } from '@/lib/api/client';
-import { mapPermissionSummary, type PermissionSummary } from '@/lib/api/permissions';
+import { mapPermissionSummary, type PermissionSummary } from '@/server/api/permissions';
 
 export type RoleStatus = 'active' | 'disabled';
 export type RolesListLimit = 10 | 25 | 50 | 100;

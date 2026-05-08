@@ -1,6 +1,6 @@
 import Box from '@adanft/ui/box';
 
-import type { PermissionsListState } from '@/lib/api/permissions';
+import type { PermissionsListState } from '@/server/api/permissions';
 import { PermissionsPaginationFoot, PermissionsPaginationHead } from './permissions-pagination';
 import PermissionsTable from './permissions-table';
 

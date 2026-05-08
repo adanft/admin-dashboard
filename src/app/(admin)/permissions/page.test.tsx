@@ -2,7 +2,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { PermissionsListQuery, PermissionsListState } from '@/lib/api/permissions';
+import type { PermissionsListQuery, PermissionsListState } from '@/server/api/permissions';
 import { getSession } from '@/server/auth/session';
 import PermissionsPage from './page';
 
@@ -12,9 +12,10 @@ vi.mock('@/server/auth/session', () => ({
   getSession: vi.fn(),
 }));
 
-vi.mock('@/lib/api/permissions', async () => {
-  const actual =
-    await vi.importActual<typeof import('@/lib/api/permissions')>('@/lib/api/permissions');
+vi.mock('@/server/api/permissions', async () => {
+  const actual = await vi.importActual<typeof import('@/server/api/permissions')>(
+    '@/server/api/permissions',
+  );
 
   return {
     ...actual,

@@ -4,7 +4,7 @@ import Button from '@adanft/ui/button';
 import { KeyRound } from 'lucide-react';
 import Link from 'next/link';
 
-import type { PermissionSummary } from '@/lib/api/permissions';
+import type { PermissionSummary } from '@/server/api/permissions';
 
 type RolePermissionsViewProps = {
   canModify: boolean;

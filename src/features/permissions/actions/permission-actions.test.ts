@@ -29,7 +29,7 @@ vi.mock('@/lib/api/client', () => ({
   isAdminApiError: (error: unknown) => error instanceof mocks.MockAdminApiError,
 }));
 
-vi.mock('@/lib/api/permissions', () => ({
+vi.mock('@/server/api/permissions', () => ({
   permissionsApi: mocks.permissionsApi,
 }));
 

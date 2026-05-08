@@ -3,7 +3,7 @@ import Button from '@adanft/ui/button';
 import Field from '@adanft/ui/field';
 import Input from '@adanft/ui/input';
 
-import type { PermissionsListQuery } from '@/lib/api/permissions';
+import type { PermissionsListQuery } from '@/server/api/permissions';
 
 export default function PermissionsFilterForm({ query }: { query: PermissionsListQuery }) {
   return (

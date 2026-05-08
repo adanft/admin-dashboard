@@ -6,8 +6,8 @@ import Input from '@adanft/ui/input';
 import Link from 'next/link';
 import { useActionState } from 'react';
 
-import type { PermissionProfile } from '@/lib/api/permissions';
-import { type PermissionActionState, updatePermissionAction } from '../_lib/permission-actions';
+import type { PermissionProfile } from '@/server/api/permissions';
+import { type PermissionActionState, updatePermissionAction } from '../actions/permission-actions';
 
 type PermissionFormProps = {
   initialActionState?: PermissionActionState;

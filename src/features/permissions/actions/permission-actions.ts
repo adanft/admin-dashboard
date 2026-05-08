@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { isAdminApiError } from '@/lib/api/client';
-import { permissionsApi, type UpdatePermissionPayload } from '@/lib/api/permissions';
+import { permissionsApi, type UpdatePermissionPayload } from '@/server/api/permissions';
 import { getSession } from '@/server/auth/session';
 
 type PermissionActionField = keyof UpdatePermissionPayload;

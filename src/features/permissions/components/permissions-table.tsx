@@ -4,7 +4,7 @@ import Table, { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Info, Pencil } from 'lucide-react';
 import Link from 'next/link';
 
-import type { PermissionStatus, PermissionsList } from '@/lib/api/permissions';
+import type { PermissionStatus, PermissionsList } from '@/server/api/permissions';
 
 const STATUS_LABELS: Record<PermissionStatus, string> = {
   active: 'Active',

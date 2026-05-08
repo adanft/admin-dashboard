@@ -9,7 +9,7 @@ import Label from '@adanft/ui/label';
 import Link from 'next/link';
 import { useActionState } from 'react';
 
-import type { PermissionSummary } from '@/lib/api/permissions';
+import type { PermissionSummary } from '@/server/api/permissions';
 import { type RoleActionState, updateRolePermissionsAction } from '../actions/role-actions';
 
 type RolePermissionsManagerProps = {
