@@ -1,6 +1,6 @@
 import UserRolesManager from '@/features/users/components/user-roles-manager';
+import { UserRouteMessage } from '@/features/users/route-message';
 import type { UserRolesRouteState } from '@/features/users/route-state';
-import { UserRouteMessage } from '@/features/users/route-state';
 import { getUserProfileLabel } from './user-label';
 
 type UserRolesPageContentProps = {

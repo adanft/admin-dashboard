@@ -1,7 +1,7 @@
 import Box from '@adanft/ui/box';
 
+import { PermissionRouteMessage } from '../route-message';
 import type { PermissionRouteState } from '../route-state';
-import { PermissionRouteMessage } from '../route-state';
 import PermissionForm from './permission-form';
 
 type EditPermissionPageContentProps = {

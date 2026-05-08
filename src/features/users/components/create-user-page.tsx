@@ -1,6 +1,6 @@
 import Box from '@adanft/ui/box';
 
-import { UserRouteMessage } from '@/features/users/route-state';
+import { UserRouteMessage } from '@/features/users/route-message';
 import UserProfileForm from './user-profile-form';
 
 export default function CreateUserPage({ hasSession }: { hasSession: boolean }) {

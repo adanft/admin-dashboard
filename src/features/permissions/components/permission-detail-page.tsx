@@ -5,8 +5,8 @@ import { Pencil } from 'lucide-react';
 import Link from 'next/link';
 
 import type { PermissionProfile, PermissionStatus } from '@/server/api/permissions';
+import { PermissionRouteMessage } from '../route-message';
 import type { PermissionRouteState } from '../route-state';
-import { PermissionRouteMessage } from '../route-state';
 
 type PermissionDetailPageContentProps = {
   state: PermissionRouteState;

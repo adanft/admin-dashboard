@@ -10,16 +10,32 @@ const adminPath = (...segments: string[]) =>
 
 const featureRouteWrappers = [
   {
-    importName: 'AccountPage',
     importPath: '@/features/account/components/account-page',
     route: ['account', 'page.tsx'],
     title: 'My Account',
   },
   {
-    importName: 'AccountSessionsPage',
     importPath: '@/features/account/components/account-sessions-page',
     route: ['account', 'sessions', 'page.tsx'],
     title: 'Sessions',
+  },
+] as const;
+
+const serverRouteStateModules = [
+  {
+    feature: 'permissions',
+    routeState: ['src', 'features', 'permissions', 'route-state.ts'],
+    routeMessage: ['src', 'features', 'permissions', 'route-message.tsx'],
+  },
+  {
+    feature: 'roles',
+    routeState: ['src', 'features', 'roles', 'route-state.ts'],
+    routeMessage: ['src', 'features', 'roles', 'route-message.tsx'],
+  },
+  {
+    feature: 'users',
+    routeState: ['src', 'features', 'users', 'route-state.ts'],
+    routeMessage: ['src', 'features', 'users', 'route-message.tsx'],
   },
 ] as const;
 
@@ -46,11 +62,13 @@ describe('dashboard pages', () => {
 
   it.each(featureRouteWrappers)(
     'keeps $title owned by its feature page wrapper',
-    ({ importName, importPath, route }) => {
+    ({ importPath, route }) => {
       const source = readRouteSource(route);
 
-      expect(source).toContain(`import ${importName} from '${importPath}';`);
-      expect(source).toContain(`return <${importName} />;`);
+      const localName = getDefaultImportName(source, importPath);
+
+      expect(localName).toBeTruthy();
+      expect(source).toContain(`<${localName}`);
       expect(source).not.toContain('<main');
     },
   );
@@ -61,8 +79,40 @@ describe('dashboard pages', () => {
     expect(source).toContain(importPath);
     expect(source).not.toContain('<main');
   });
+
+  it.each(serverRouteStateModules)(
+    'keeps $feature route-state server-only and moves message UI into route-message',
+    ({ routeMessage, routeState }) => {
+      const routeStateSource = readProjectSource(routeState);
+      const routeMessageSource = readProjectSource(routeMessage);
+
+      expect(routeStateSource).not.toContain('@adanft/ui/box');
+      expect(routeStateSource).not.toMatch(/export\s+function\s+\w*RouteMessage/);
+      expect(routeStateSource).not.toContain('<Box');
+      expect(routeMessageSource).toContain('@adanft/ui/box');
+      expect(routeMessageSource).toContain('import type {');
+      expect(routeMessageSource).toContain("from './route-state'");
+    },
+  );
 });
 
 function readRouteSource(route: readonly string[]) {
   return readFileSync(adminPath(...route), 'utf8');
+}
+
+function readProjectSource(segments: readonly string[]) {
+  return readFileSync(join(process.cwd(), ...segments), 'utf8');
+}
+
+function getDefaultImportName(source: string, importPath: string) {
+  const escapedImportPath = escapeRegExp(importPath);
+  const match = source.match(
+    new RegExp(`import\\s+(\\w+)\\s+from\\s+['"]${escapedImportPath}['"]`),
+  );
+
+  return match?.[1] ?? null;
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

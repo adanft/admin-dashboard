@@ -1,5 +1,3 @@
-import Box from '@adanft/ui/box';
-
 import { isAdminApiError } from '@/server/api/client';
 import { type RoleSummary, rolesApi } from '@/server/api/roles';
 import type { UserProfile } from '@/server/api/users';
@@ -61,19 +59,6 @@ export async function loadUserRolesRouteState(id: string): Promise<UserRolesRout
 export async function hasCreateUserSession() {
   const session = await getSession();
   return Boolean(session?.accessToken);
-}
-
-export function UserRouteMessage({
-  state,
-}: {
-  state: Exclude<UserRouteState, { status: 'success' }>;
-}) {
-  return (
-    <Box className="space-y-2" padding="default" role="alert">
-      <h2 className="text-xl font-semibold text-heading">{state.title}</h2>
-      <p className="text-foreground">{state.guidance}</p>
-    </Box>
-  );
 }
 
 function mapUserRouteError(error: unknown): Exclude<UserRouteState, { status: 'success' }> {

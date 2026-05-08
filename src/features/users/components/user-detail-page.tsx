@@ -5,8 +5,8 @@ import { Pencil } from 'lucide-react';
 import Link from 'next/link';
 
 import type { UserProfile, UserStatus } from '@/server/api/users';
+import { UserRouteMessage } from '../route-message';
 import type { UserRouteState } from '../route-state';
-import { UserRouteMessage } from '../route-state';
 import { getUserProfileLabel } from './user-label';
 import UserRolesView from './user-roles-view';
 import UserRowDeleteAction from './user-row-delete-action';

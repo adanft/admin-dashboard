@@ -1,8 +1,8 @@
 import Box from '@adanft/ui/box';
 
 import UserProfileForm from '@/features/users/components/user-profile-form';
+import { UserRouteMessage } from '@/features/users/route-message';
 import type { UserRouteState } from '@/features/users/route-state';
-import { UserRouteMessage } from '@/features/users/route-state';
 import { getUserProfileLabel } from './user-label';
 
 type EditUserPageContentProps = {

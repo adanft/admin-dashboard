@@ -1,7 +1,7 @@
 import Box from '@adanft/ui/box';
 
+import { RoleRouteMessage } from '../route-message';
 import type { RoleRouteState } from '../route-state';
-import { RoleRouteMessage } from '../route-state';
 import RoleForm from './role-form';
 
 type EditRolePageContentProps = {

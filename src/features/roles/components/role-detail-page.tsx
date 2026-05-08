@@ -5,8 +5,8 @@ import { Pencil } from 'lucide-react';
 import Link from 'next/link';
 
 import type { RoleProfile, RoleStatus } from '@/server/api/roles';
+import { RoleRouteMessage } from '../route-message';
 import type { RoleDetailRouteState } from '../route-state';
-import { RoleRouteMessage } from '../route-state';
 import RolePermissionsView from './role-permissions-view';
 import RoleRowDeleteAction from './role-row-delete-action';
 import { formatDisplayDate } from './roles-table';
