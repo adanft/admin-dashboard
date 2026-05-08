@@ -48,7 +48,7 @@ describe('revokeSessionAction', () => {
   it('rejects empty session ids before calling the backend', async () => {
     const formData = new FormData();
 
-    await expect(revokeSessionAction(formData)).resolves.toBeUndefined();
+    await expect(revokeSessionAction({}, formData)).resolves.toEqual({});
     expect(mocks.revokeSession).not.toHaveBeenCalled();
   });
 
@@ -57,7 +57,7 @@ describe('revokeSessionAction', () => {
     const formData = new FormData();
     formData.set('sessionId', 'session-1');
 
-    await expect(revokeSessionAction(formData)).resolves.toBeUndefined();
+    await expect(revokeSessionAction({}, formData)).resolves.toEqual({});
 
     expect(mocks.revokeSession).toHaveBeenCalledWith('session-1', 'access-token', 'refresh-token');
     expect(mocks.revalidatePath).toHaveBeenCalledWith('/account/sessions');
@@ -71,7 +71,7 @@ describe('revokeSessionAction', () => {
     formData.set('sessionId', 'session-1');
     formData.set('isCurrent', 'true');
 
-    await expect(revokeSessionAction(formData)).rejects.toThrow('NEXT_REDIRECT:/auth/sign-in');
+    await expect(revokeSessionAction({}, formData)).rejects.toThrow('NEXT_REDIRECT:/auth/sign-in');
 
     expect(mocks.revokeSession).toHaveBeenCalledWith('session-1', 'access-token', 'refresh-token');
     expect(mocks.clearSession).toHaveBeenCalled();
@@ -84,20 +84,23 @@ describe('revokeSessionAction', () => {
     const formData = new FormData();
     formData.set('sessionId', 'session-1');
 
-    await expect(revokeSessionAction(formData)).rejects.toThrow('NEXT_REDIRECT:/auth/sign-in');
+    await expect(revokeSessionAction({}, formData)).rejects.toThrow('NEXT_REDIRECT:/auth/sign-in');
 
     expect(mocks.revokeSession).not.toHaveBeenCalled();
     expect(mocks.clearSession).toHaveBeenCalled();
     expect(mocks.clearRefreshCookie).toHaveBeenCalled();
   });
 
-  it('returns an error when revoke fails', async () => {
+  it('returns a safe error message when revoke fails', async () => {
     mocks.getSession.mockResolvedValueOnce({ accessToken: 'access-token' });
     mocks.revokeSession.mockRejectedValueOnce(new Error('backend unavailable'));
     const formData = new FormData();
     formData.set('sessionId', 'session-1');
 
-    await expect(revokeSessionAction(formData)).resolves.toBeUndefined();
+    await expect(revokeSessionAction({}, formData)).resolves.toEqual({
+      status: 'error',
+      message: 'Unable to revoke this session right now. Try again later.',
+    });
     expect(mocks.revalidatePath).not.toHaveBeenCalled();
     expect(mocks.clearSession).not.toHaveBeenCalled();
     expect(mocks.clearRefreshCookie).not.toHaveBeenCalled();

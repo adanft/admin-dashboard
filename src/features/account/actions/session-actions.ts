@@ -7,11 +7,19 @@ import { redirect } from 'next/navigation';
 import { accountApi } from '@/server/api/account';
 import { clearRefreshCookie, clearSession, getSession } from '@/server/auth/session';
 
-export async function revokeSessionAction(formData: FormData): Promise<void> {
+export type RevokeSessionActionState = {
+  status?: 'error';
+  message?: string;
+};
+
+export async function revokeSessionAction(
+  _previousState: RevokeSessionActionState,
+  formData: FormData,
+): Promise<RevokeSessionActionState> {
   const sessionId = readRequiredText(formData, 'sessionId');
 
   if (!sessionId) {
-    return;
+    return {};
   }
 
   const session = await getSession();
@@ -27,7 +35,10 @@ export async function revokeSessionAction(formData: FormData): Promise<void> {
   try {
     await accountApi.revokeSession(sessionId, session.accessToken, refreshToken);
   } catch {
-    return;
+    return {
+      status: 'error',
+      message: 'Unable to revoke this session right now. Try again later.',
+    };
   }
 
   revalidatePath('/account/sessions');
@@ -38,7 +49,7 @@ export async function revokeSessionAction(formData: FormData): Promise<void> {
     redirect('/auth/sign-in');
   }
 
-  return;
+  return {};
 }
 
 function readRequiredText(formData: FormData, key: string) {

@@ -28,8 +28,18 @@ vi.mock('@/server/api/account', async () => {
   };
 });
 
-vi.mock('../actions/session-actions', () => ({
-  revokeSessionAction: '/account/sessions/revoke',
+vi.mock('./session-revoke-form', () => ({
+  default: ({ isCurrent, sessionId }: { isCurrent: boolean; sessionId: string }) => (
+    <form action="/account/sessions/revoke">
+      <input name="sessionId" type="hidden" value={sessionId} />
+      <input name="isCurrent" type="hidden" value={String(isCurrent)} />
+      <button
+        aria-label={isCurrent ? 'Revoke current session and sign out' : 'Revoke session'}
+        title={isCurrent ? 'Revoke current session and sign out' : 'Revoke session'}
+        type="submit"
+      />
+    </form>
+  ),
 }));
 
 const getSessionMock = vi.mocked(getSession);

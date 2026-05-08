@@ -91,7 +91,7 @@ describe('required password change action', () => {
     expect(mocks.accountApi.changePassword).not.toHaveBeenCalled();
   });
 
-  it('maps backend validation failures to a password policy error message', async () => {
+  it('maps backend validation failures to a safe password policy error message', async () => {
     mocks.getRequiredPasswordChangeSession.mockResolvedValue({ accessToken: 'temporary-token' });
     mocks.accountApi.changePassword.mockRejectedValue(
       new mocks.MockAdminApiError(400, 'password is too weak'),
@@ -100,7 +100,7 @@ describe('required password change action', () => {
     await expect(requiredPasswordChangeAction({}, createPasswordFormData())).resolves.toEqual({
       status: 'error',
       message:
-        'We could not update your password. Check that your current password is correct and that the new password meets the password policy. Details: password is too weak',
+        'We could not update your password. Check that your current password is correct and that the new password meets the password policy.',
     });
   });
 });

@@ -112,11 +112,7 @@ function getChangePasswordErrorMessage(error: unknown) {
   }
 
   if (error.status === 400) {
-    const backendMessage = error.message.trim();
-
-    return backendMessage
-      ? `${BAD_REQUEST_PASSWORD_MESSAGE} Details: ${backendMessage}`
-      : BAD_REQUEST_PASSWORD_MESSAGE;
+    return BAD_REQUEST_PASSWORD_MESSAGE;
   }
 
   return 'Unable to update your password right now.';

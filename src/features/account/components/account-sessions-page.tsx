@@ -1,13 +1,11 @@
 import Badge from '@adanft/ui/badge';
 import Box from '@adanft/ui/box';
-import Button from '@adanft/ui/button';
 import Table, { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@adanft/ui/table';
-import { LogOut } from 'lucide-react';
 import { cookies } from 'next/headers';
 
 import { type AuthSession, type AuthSessionsState, accountApi } from '@/server/api/account';
 import { getSession } from '@/server/auth/session';
-import { revokeSessionAction } from '../actions/session-actions';
+import SessionRevokeForm from './session-revoke-form';
 
 export default async function AccountSessionsPage() {
   const session = await getSession();
@@ -83,22 +81,7 @@ function SessionsTable({ sessions }: { sessions: AuthSession[] }) {
               </Badge>
             </TableCell>
             <TableCell>
-              <form action={revokeSessionAction}>
-                <input name="sessionId" type="hidden" value={session.id} />
-                <input name="isCurrent" type="hidden" value={String(session.isCurrent)} />
-                <Button
-                  aria-label={
-                    session.isCurrent ? 'Revoke current session and sign out' : 'Revoke session'
-                  }
-                  className="size-8 rounded-full bg-transparent p-0 text-danger hover:bg-danger/10"
-                  title={
-                    session.isCurrent ? 'Revoke current session and sign out' : 'Revoke session'
-                  }
-                  type="submit"
-                >
-                  <LogOut aria-hidden="true" className="size-4" />
-                </Button>
-              </form>
+              <SessionRevokeForm isCurrent={session.isCurrent} sessionId={session.id} />
             </TableCell>
           </TableRow>
         ))}

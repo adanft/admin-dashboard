@@ -95,7 +95,7 @@ describe('changePasswordAction', () => {
     });
   });
 
-  it('adds user-facing context to backend bad request password details', async () => {
+  it('maps backend bad request password details to a safe fixed message', async () => {
     mocks.getSession.mockResolvedValueOnce({ accessToken: 'access-token' });
     mocks.changePassword.mockRejectedValueOnce(
       new MockAdminApiError(400, 'new password does not meet policy'),
@@ -107,7 +107,7 @@ describe('changePasswordAction', () => {
     await expect(changePasswordAction({}, formData)).resolves.toEqual({
       status: 'error',
       message:
-        'We could not update your password. Check that your current password is correct and that the new password meets the password policy. Details: new password does not meet policy',
+        'We could not update your password. Check that your current password is correct and that the new password meets the password policy.',
     });
   });
 
