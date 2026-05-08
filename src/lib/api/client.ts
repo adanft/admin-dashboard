@@ -41,6 +41,12 @@ type LogoutOptions = {
   refreshToken?: string;
 };
 
+type AuthenticatedCookiePostOptions = {
+  path: string;
+  refreshToken?: string;
+  token: string;
+};
+
 type ParsedEnvelopeBody<TData> = Partial<BackendEnvelope<TData>> & {
   code?: string;
   error?: string;
@@ -156,6 +162,41 @@ export async function requestAuthenticatedDelete({ path, token }: AuthenticatedD
 
 export async function requestAuthenticatedEmptyPost({ path, token }: AuthenticatedDeleteOptions) {
   return requestAuthenticatedEmptyMutation({ method: 'POST', path, token });
+}
+
+export async function requestAuthenticatedCookiePost({
+  path,
+  refreshToken,
+  token,
+}: AuthenticatedCookiePostOptions) {
+  const headers: HeadersInit = {
+    Accept: 'application/json',
+    Authorization: `Bearer ${token}`,
+  };
+
+  if (refreshToken) {
+    headers.Cookie = `refresh_token=${refreshToken}`;
+  }
+
+  const response = await fetch(`${getAdminApiBaseUrl()}${path}`, {
+    method: 'POST',
+    headers,
+    cache: 'no-store',
+  });
+
+  if (response.status === 204) {
+    return;
+  }
+
+  const envelope = await parseEnvelope<null>(response);
+
+  if (!response.ok || !envelope.success) {
+    throw new AdminApiError({
+      code: envelope.success ? undefined : envelope.code,
+      message: envelope.success ? response.statusText || 'Request failed.' : envelope.error,
+      status: envelope.status || response.status,
+    });
+  }
 }
 
 async function requestAuthenticatedEmptyMutation({
